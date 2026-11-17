@@ -7,7 +7,7 @@
 - 특정 가수나 팬덤을 가정하지 않고, 실제 이름을 미리 넣지 않음
 - Play 스토어에는 올리지 않음
 
-> 현재 명세 단계이며 앱 코드는 아직 없습니다. 화면 흐름은 [STORYBOARD.md](STORYBOARD.md)를 보세요.
+> 현재 설계 단계이며 앱 코드는 아직 없습니다. 만드는 방법은 [DESIGN.md](DESIGN.md), 화면 흐름은 [STORYBOARD.md](STORYBOARD.md)를 보세요.
 
 ## 범위
 
