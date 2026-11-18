@@ -62,7 +62,7 @@ tests/e2e/      Playwright 시나리오
 | `presets` | name, items[{name, details[]}] | 프리셋 내용 |
 | `songs` | targetId, title, lyrics, layer, links[] | 원본 가사와 응원법 층을 따로 저장 |
 | `songOpens` | songId, at | 펼친 기록. 같은 곡은 30분 안에 다시 세지 않음 |
-| `bubbleDays` | targetId, date, count?, source(`manual`/`auto`) | 버블 온 날. 직접 체크는 count 없음, 2단계 자동은 하루 횟수 |
+| `bubbleDays` | targetId, date, count?, source(`manual`/`auto`), dismissed? | 버블 온 날. 직접 체크는 count 없음, 2단계 자동은 하루 횟수. 직접 체크한 날에 자동이 들어오면 횟수만 더하고, 사용자가 지운 날(`dismissed`)은 자동으로 다시 채우지 않음 |
 | `themes` | name, bg, surface, accent, accent2, text(`auto`/색) | 라이트·흑백은 코드에 내장 |
 | `categoryColors` | name → color | 같은 이름의 분류는 같은 색 |
 | `blobs` | kind(`photo`/`font`), name, data | 대상 사진(긴 변 900px로 줄여 저장), 글꼴 파일 |
