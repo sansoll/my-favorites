@@ -53,7 +53,7 @@ tests/e2e/      Playwright 시나리오
 
 | 저장소 | 주요 필드 | 메모 |
 |---|---|---|
-| `targets` | name, color, photoId?, order, presetId? | `기타`는 `isEtc`로 표시하고 지울 수 없음 |
+| `targets` | name, color, photoId?, order, presetId?, bubbleOn | `기타`는 `isEtc`로 표시하고 지울 수 없음 |
 | `categories` | targetId, name, order, isEtc | 대상마다 따로 |
 | `details` | categoryId, name, order, isEtc | 분류마다 따로 |
 | `records` | date(YYYY-MM-DD), targetId, categoryId, detailId, etcText, paid, refund, memo, placeId?, recurringId?, createdAt, updatedAt | 금액은 원 단위 정수. 미래 날짜면 예정 |
@@ -62,6 +62,7 @@ tests/e2e/      Playwright 시나리오
 | `presets` | name, items[{name, details[]}] | 프리셋 내용 |
 | `songs` | targetId, title, lyrics, layer, links[] | 원본 가사와 응원법 층을 따로 저장 |
 | `songOpens` | songId, at | 펼친 기록. 같은 곡은 30분 안에 다시 세지 않음 |
+| `bubbleDays` | targetId, date, count?, source(`manual`/`auto`) | 버블 온 날. 직접 체크는 count 없음, 2단계 자동은 하루 횟수 |
 | `themes` | name, bg, surface, accent, accent2, text(`auto`/색) | 라이트·흑백은 코드에 내장 |
 | `categoryColors` | name → color | 같은 이름의 분류는 같은 색 |
 | `blobs` | kind(`photo`/`font`), name, data | 대상 사진(긴 변 900px로 줄여 저장), 글꼴 파일 |
@@ -128,7 +129,7 @@ tests/e2e/      Playwright 시나리오
 |---|---|---|
 | 0 | 프로젝트 뼈대, 저장소, 하단 탭, 라이트 테마, 자동 배포, PWA 설치 | 폰에 앱 설치 |
 | 1 | 대상·분류·세부·금액 기록, 편집 모드, 프리셋, 내역(보기·수정·환불·삭제·옮기기), 삭제 규칙 | 실제로 지출 기록 시작 |
-| 2 | 통계, 정기 결제와 알림, 장소 검색과 다녀온 곳 | 어디에 얼마 썼는지 보기 |
+| 2 | 통계, 정기 결제와 알림, 장소 검색과 다녀온 곳, 버블 달력 | 어디에 얼마 썼는지 보기 |
 | 3 | 응원법(가사, 색칠, 추가 응원, 보기 모드, 공연장 모드) | 응원법 외우기 |
 | 4 | 테마(흑백, 사진 테마, 글자색, 글꼴, 대상 사진), 연말 결산, 튜토리얼, 내보내기·불러오기 | 1단계 완성 |
 | 2단계 | Capacitor 안드로이드 앱, 위젯, 정확한 알림, 구글 드라이브 백업 | |
@@ -196,6 +197,12 @@ tests/e2e/      Playwright 시나리오
 ### 안드로이드 앱 (2단계)
 
 - 배포용 빌드에서는 웹뷰 디버깅을 끄고, 암호화되지 않은 `http` 연결을 막습니다.
+- **버블 자동 체크(알림 접근):**
+  - 다른 앱 알림을 읽는 민감한 기능이라, 켜기 직전에 무엇을 읽고 무엇을 저장하는지 화면으로 알리고 동의를 받습니다(Play의 '눈에 띄는 공개' 요건).
+  - 사용자가 고른 버블 앱의 알림만 보고, 메시지 내용은 저장하지 않으며 날짜·시각·보낸 사람 이름만 씁니다.
+  - 데이터 보안 양식에 '앱 활동(다른 앱 알림) - 기기에서만 처리'로 적습니다.
+  - 끄면 바로 읽기를 멈추고, 수동 체크는 그대로 됩니다.
+  - 버블 앱마다 알림 형식이 달라 보낸 사람을 못 읽으면 대상 연결을 사용자에게 묻습니다.
 - **안드로이드 자동 백업:** 백업 대상(기록 DB는 포함, 캐시는 제외)을 설정 파일로 정합니다.
 - **구글 드라이브 백업:** 앱 전용 숨김 폴더 권한(`drive.appdata`)만 씁니다. 로그인 정보는 웹 저장소가 아니라 안드로이드의 보안 저장소에 둡니다.
 - **잠금 화면 알림:** 기본으로 금액을 숨깁니다(예: "내일 정기 결제가 있어요"). 금액까지 보일지는 설정에서 고릅니다.
