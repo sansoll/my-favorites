@@ -53,7 +53,7 @@ tests/e2e/      Playwright 시나리오
 
 | 저장소 | 주요 필드 | 메모 |
 |---|---|---|
-| `targets` | name, color, photoId?, order, presetId?, bubbleOn | `기타`는 `isEtc`로 표시하고 지울 수 없음 |
+| `targets` | name, color, photoId?, order, presetId?, bubbleOn, bubbleCover?{all, months{YYYY-MM}, bg} | `기타`는 `isEtc`로 표시하고 지울 수 없음 |
 | `categories` | targetId, name, order, isEtc | 대상마다 따로 |
 | `details` | categoryId, name, order, isEtc | 분류마다 따로 |
 | `records` | date(YYYY-MM-DD), targetId, categoryId, detailId, etcText, paid, refund, memo, placeId?, recurringId?, createdAt, updatedAt | 금액은 원 단위 정수. 미래 날짜면 예정 |
