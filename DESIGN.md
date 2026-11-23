@@ -65,8 +65,8 @@ tests/e2e/      Playwright 시나리오
 | `bubbleDays` | targetId, date, count?, source(`manual`/`auto`), dismissed? | 버블 온 날. 직접 체크는 count 없음, 2단계 자동은 하루 횟수. 직접 체크한 날에 자동이 들어오면 횟수만 더하고, 사용자가 지운 날(`dismissed`)은 자동으로 다시 채우지 않음 |
 | `themes` | name, bg, surface, accent, accent2, text(`auto`/색) | 라이트·흑백은 코드에 내장 |
 | `categoryColors` | name → color | 같은 이름의 분류는 같은 색 |
-| `blobs` | kind(`photo`/`font`), name, data | 대상 사진(긴 변 900px로 줄여 저장), 글꼴 파일 |
-| `settings` | 키-값 | 테마, 글꼴, 알림 시간, 마지막 보기 모드, 결산 본 연도, 튜토리얼 완료 등 |
+| `blobs` | kind(`photo`/`font`), name, data | 대상 사진·달력 표지(긴 변 900px로 줄여 저장), 글꼴 파일. 내보내기에는 넣지 않음 |
+| `settings` | 키-값 | 테마, 글꼴, 알림 켜기·시간, 마지막 보기 모드, 결산 본 연도, 튜토리얼 완료, 기본 프리셋 물었는지 등 |
 
 ### 응원법 층
 
@@ -97,8 +97,8 @@ tests/e2e/      Playwright 시나리오
 
 | 기능 | 방법 | 주의 |
 |---|---|---|
-| 국내 장소 검색 | 카카오 JavaScript SDK `services.Places` | 카카오 개발자 사이트에 앱을 등록하고 JavaScript 키를 받아, 사이트 도메인을 `sansoll.github.io`로 묶습니다. 키는 코드에 들어가지만 도메인이 묶여 있어 다른 곳에서는 못 씁니다. |
-| 해외 장소 검색 | OpenStreetMap 검색(Nominatim) | 입력할 때마다가 아니라 `검색` 버튼을 눌렀을 때만 찾습니다(사용 정책: 초당 1회, 자동완성 금지). 출처를 표시합니다. |
+| 국내 장소 검색 (후보, 미확정) | 카카오 JavaScript SDK `services.Places` | 카카오 개발자 사이트에 앱을 등록하고 JavaScript 키를 받아, 사이트 도메인을 `sansoll.github.io`로 묶습니다. 키는 코드에 들어가지만 도메인이 묶여 있어 다른 곳에서는 못 씁니다. |
+| 해외 장소 검색 (후보, 미확정) | OpenStreetMap 검색(Nominatim) | 입력할 때마다가 아니라 `검색` 버튼을 눌렀을 때만 찾습니다(사용 정책: 초당 1회, 자동완성 금지). 출처를 표시합니다. |
 | 지도 열기 | 링크 | 국내는 카카오맵, 해외는 구글 지도. 돈이 들지 않습니다. |
 | 알림 | 앱 안 안내 + 앱을 열 때 폰 알림 | PWA는 앱이 닫혀 있을 때 정해진 시간에 알림을 보낼 수 없습니다. 확실한 알림은 2단계에서 지원합니다. |
 | 결산 공유 | 카드를 이미지로 만들어 폰 공유 창 | 공유를 지원하지 않으면 이미지 저장으로 대신합니다. |
