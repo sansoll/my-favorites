@@ -7,7 +7,7 @@
 - 특정 가수나 팬덤을 가정하지 않고, 실제 이름을 미리 넣지 않음
 - 지금은 스토어에 올리지 않지만, 나중에 Play·갤럭시 스토어에 올릴 수 있게 설계 ([DESIGN.md](DESIGN.md) 9장)
 
-> 현재 설계 단계이며 앱 코드는 아직 없습니다. 목표는 2027년 1월 1일부터 실제 사용이며, 일정은 [DESIGN.md](DESIGN.md) 7장에 있습니다. 만드는 방법은 [DESIGN.md](DESIGN.md), 화면 흐름은 [STORYBOARD.md](STORYBOARD.md)를 보세요.
+> 현재 설계 단계이며 앱 코드는 아직 없습니다. 목표는 2027년 1월 1일부터 실제 사용이며, 작업 단위와 일정은 [PLAN.md](PLAN.md)에 있습니다. 만드는 방법은 [DESIGN.md](DESIGN.md), 화면 흐름은 [STORYBOARD.md](STORYBOARD.md)를 보세요.
 
 ## 범위
 
