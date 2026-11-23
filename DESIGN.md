@@ -224,4 +224,13 @@ tests/e2e/      Playwright 시나리오
 ## 준비가 필요한 것 (사용자)
 
 - **11/27:** GitHub 저장소 설정에서 Pages 켜기 (방법은 개발 시작 때 안내)
-- **12/5까지:** 카카오 개발자 계정 · 앱 등록 · '카카오맵 사용' 켜기 · JavaScript 키 발급
+- ~~카카오 개발자 앱 등록, 카카오맵 사용 ON, JavaScript 키 발급~~ (11/24 완료)
+
+### 카카오 JavaScript 키
+
+도메인에 묶인 키라 코드에 들어가도 다른 주소에서는 쓸 수 없습니다. 개발할 때 환경 설정 파일(`.env.production`, `.env.development`)에 넣습니다. REST API 키와 어드민 키는 쓰지 않고 저장소에 올리지 않습니다.
+
+| 용도 | 등록 도메인 | 키 |
+|---|---|---|
+| 배포용 | `https://sansoll.github.io` | `b0c635b31eaa989b0afcb55ebf835c17` |
+| 개발용 | `http://localhost:5173` | `ba782730b4d19fdd826cc713cbcbc2a2` |
