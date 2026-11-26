@@ -1,0 +1,7 @@
+.group { display: flex; flex-direction: column; }
+.groupTitle { margin: 0; padding-bottom: 0.25rem; font-size: 0.8125rem; font-weight: 500; color: var(--text-sub); }
+.row {
+  display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; min-height: 3.5rem;
+  border-bottom: 1px solid var(--line-soft); font-size: 1rem; color: var(--text); text-decoration: none;
+}
+.meta { font-size: 0.875rem; color: var(--text-sub); text-align: right; overflow-wrap: anywhere; }

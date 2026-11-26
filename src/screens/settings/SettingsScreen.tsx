@@ -1,9 +1,20 @@
+import { useLiveQuery } from 'dexie-react-hooks';
+import { Link } from 'react-router-dom';
+import { getDb } from '../../data/db';
+import { listPresets } from '../../data/repo/presets';
 import { Placeholder, Screen } from '../../components/Screen';
+import s from './Settings.module.css';
 
+/** 설정. 테마, 정기 결제, 백업 등은 각 단계(M3, M7, M9)에서 더합니다. */
 export function SettingsScreen() {
+  const presets = useLiveQuery(() => listPresets(getDb()), []) ?? [];
   return (
     <Screen title="설정">
-      <Placeholder>프리셋, 테마, 정기 결제, 백업을 다루는 화면이에요. M7에서 만들어요.</Placeholder>
+      <section className={s.group}>
+        <h2 className={s.groupTitle}>목록과 꾸미기</h2>
+        <Link to="/settings/presets" className={s.row}><span>프리셋</span><span className={s.meta}>{presets.length ? presets.map((p) => p.name).join(' · ') : '없음'} ›</span></Link>
+      </section>
+      <Placeholder>테마, 정기 결제, 내보내기·불러오기는 다음 단계에서 여기에 생겨요.</Placeholder>
     </Screen>
   );
 }
