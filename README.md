@@ -180,3 +180,5 @@ npm run build      # dist/ 에 배포용 빌드
 ```
 
 `main`에 올리면 GitHub Actions가 타입 검사, 테스트, 빌드를 차례로 돌리고, 모두 통과해야 GitHub Pages에 배포합니다.
+
+작업 브랜치(`feat/…`)를 올리면 같은 검사를 통과한 뒤 본 사이트는 그대로 두고 그 브랜치 버전을 미리보기 주소(https://sansoll.github.io/my-favorites/preview/)에 올립니다. 미리보기는 저장소 이름이 달라(`my-favorites-preview`) 본 앱 데이터에 영향이 없습니다. 이렇게 하려면 저장소 Settings › Environments › `github-pages`에 `feat/*` 브랜치 허용 규칙을 넣고, Settings › Secrets and variables › Actions › Variables에 `PREVIEW_ENABLED`=`true`를 넣어야 합니다. 둘 다 없으면 미리보기는 건너뜁니다.

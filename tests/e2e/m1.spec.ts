@@ -17,7 +17,7 @@ test('첫 실행 → 대상 추가(프리셋) → 기록 저장 → 첫 화면 �
   for (const k of ['1', '5', '4', '00', '0']) await page.getByRole('button', { name: k, exact: true }).click();
   await page.getByRole('button', { name: '저장' }).click();
 
-  await expect(page.getByRole('status')).toContainText('가수 A › 행사 › 콘서트 154,000원을 저장했어요');
+  await expect(page.getByRole('status').filter({ hasText: '저장했어요' })).toContainText('가수 A › 행사 › 콘서트 154,000원을 저장했어요');
   await expect(page.getByRole('link', { name: /이번 달 지출/ })).toContainText('154,000원');
   await expect(page.getByRole('list', { name: '대상' }).getByRole('button', { name: /가수 A/ })).toContainText('154,000원');
 
