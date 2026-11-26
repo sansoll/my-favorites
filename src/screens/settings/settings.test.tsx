@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { routes } from '../../app/App';
@@ -53,7 +53,7 @@ describe('설정 화면 (U7-5)', () => {
     const dlg = screen.getByRole('dialog', { name: '내보내기' });
     expect(dlg).toHaveTextContent('사진(대상 사진·달력 표지)과 글꼴 파일은 넣지 않아요');
     await userEvent.click(within(dlg).getByRole('button', { name: '파일로 저장' }));
-    expect(saved).toHaveLength(1);
+    await waitFor(() => expect(saved).toHaveLength(1));
     expect(saved[0].name).toMatch(/^my-favorites-\d{4}-\d{2}-\d{2}\.json$/);
     expect(JSON.parse(saved[0].text).data.records).toHaveLength(1);
     expect(await screen.findByRole('button', { name: /내보내기.*마지막/ })).toBeInTheDocument();
