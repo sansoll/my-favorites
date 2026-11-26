@@ -3,11 +3,15 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getDb } from '../../data/db';
 import { saveRecord } from '../../data/repo/records';
+import { addRecurringFromRecord, getNotify } from '../../data/repo/recurring';
+import { askPermissionOnce } from '../../services/notify';
+import { repeatSummary } from '../../domain/recurring';
+import { Switch } from '../../components/Switch';
 import { DatePicker } from '../../components/DatePicker';
 import { Keypad } from '../../components/Keypad';
 import { Sheet } from '../../components/Sheet';
 import { useToast } from '../../components/Toast';
-import { formatDateLong, isScheduled, today } from '../../domain/date';
+import { formatDateLong, isScheduled, parseDateStr, today } from '../../domain/date';
 import { formatNumber, formatWon } from '../../domain/money';
 import u from '../../components/ui.module.css';
 import r from './Record.module.css';
@@ -31,6 +35,8 @@ export function AmountScreen() {
   const [memoOpen, setMemoOpen] = useState(false);
   const [memo, setMemo] = useState('');
   const [saving, setSaving] = useState(false);
+  const [repeat, setRepeat] = useState(false);
+  const notify = useLiveQuery(() => getNotify(getDb()), []);
 
   if (!data) return null;
   const { target, category, detail } = data;
@@ -47,7 +53,10 @@ export function AmountScreen() {
     if (!amount || saving) return;
     setSaving(true);
     try {
-      await saveRecord(getDb(), { targetId, categoryId, detailId, paid: amount, date, etcText, memo });
+      const db = getDb();
+      if (repeat) void askPermissionOnce(db);
+      const rec = await saveRecord(db, { targetId, categoryId, detailId, paid: amount, date, etcText, memo });
+      if (repeat) await addRecurringFromRecord(db, rec.id);
       const name = detail.isEtc && etcText.trim() ? etcText.trim() : detail.name;
       toast(`${target.name} › ${category.name} › ${name} ${formatWon(amount)}을 저장했어요`);
       nav('/', { replace: true });
@@ -80,6 +89,13 @@ export function AmountScreen() {
             <span aria-hidden="true">›</span>
           </span>
         </button>
+        <div className={s.row}>
+          <span className={`${s.rowLabel} ${s.grow1}`}>
+            매달 반복
+            {repeat && notify && <span className={s.sub}>{repeatSummary(parseDateStr(date).d, notify)}</span>}
+          </span>
+          <Switch checked={repeat} onChange={setRepeat} label="매달 반복" />
+        </div>
         {detail.isEtc && (
           <label className={s.row}>
             <span className={s.rowLabel}>기타 내용</span>

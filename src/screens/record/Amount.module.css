@@ -15,3 +15,5 @@
 .inline:focus { outline: none; }
 .memo { width: 100%; min-height: 4.5rem; padding: 0.625rem 0.75rem; border: 1.5px solid var(--line); border-radius: 0.75rem; resize: vertical; font-size: 0.9375rem; margin: 0.5rem 0; }
 .grow { flex: 1; }
+.sub { display: block; margin-top: 0.125rem; font-size: 0.8125rem; color: var(--accent); }
+.grow1 { flex: 1; min-width: 0; padding: 0.375rem 0; }
