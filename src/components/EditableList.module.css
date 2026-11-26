@@ -1,0 +1,28 @@
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.row {
+  position: relative; display: flex; align-items: center; gap: 0.5rem; min-height: 3.5rem;
+  border-bottom: 1px solid var(--line-soft); background: var(--bg); user-select: none; -webkit-user-select: none;
+}
+.dragging { z-index: 2; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12); }
+.main {
+  flex: 1 1 auto; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+  min-height: 3.5rem; padding: 0; border: 0; background: none; text-align: left; font-size: 1rem;
+}
+.name { display: flex; align-items: center; gap: 0.625rem; min-width: 0; overflow-wrap: anywhere; }
+.dot { flex: none; width: 0.625rem; height: 0.625rem; border-radius: 50%; }
+.amount { flex: none; font-size: 0.9375rem; font-weight: 500; }
+.zero { color: var(--text-muted); font-weight: 400; }
+.chev { color: var(--text-muted); }
+.handle, .more {
+  flex: none; width: var(--tap); min-height: var(--tap); border: 0; background: none;
+  color: var(--text-sub); font-size: 1.25rem; touch-action: none;
+}
+.handle { cursor: grab; }
+.menu { display: flex; flex-direction: column; }
+.menuItem {
+  display: flex; align-items: center; min-height: 3.25rem; padding: 0; border: 0; border-bottom: 1px solid var(--line-soft);
+  background: none; font-size: 1rem; text-align: left;
+}
+.menuDanger { color: var(--danger); }
+.note { margin: 0; font-size: 0.8125rem; color: var(--text-sub); }
+.meta { margin: 0; font-size: 0.875rem; color: var(--text-sub); }
