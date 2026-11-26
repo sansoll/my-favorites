@@ -11,6 +11,7 @@ import { RecordDetailScreen } from '../screens/history/RecordDetailScreen';
 import { PresetsScreen } from '../screens/settings/PresetsScreen';
 import { RecurringScreen } from '../screens/settings/RecurringScreen';
 import { CheckScreen } from '../screens/check/CheckScreen';
+import { VisitedScreen } from '../screens/stats/VisitedScreen';
 import { Layout } from './Layout';
 
 /** GitHub Pages는 서버 설정이 없어서 `#/history` 같은 해시 주소를 씁니다. */
@@ -26,6 +27,7 @@ export const routes: RouteObject[] = [
       { path: '/history', element: <HistoryScreen /> },
       { path: '/records/:id', element: <RecordDetailScreen /> },
       { path: '/stats', element: <StatsScreen /> },
+      { path: '/stats/places', element: <VisitedScreen /> },
       { path: '/cheer', element: <CheerScreen /> },
       { path: '/settings', element: <SettingsScreen /> },
       { path: '/settings/presets', element: <PresetsScreen /> },

@@ -75,3 +75,16 @@ export function mapUrl(p: Place): string {
   if (p.source === 'kakao') return `https://place.map.kakao.com/${encodeURIComponent(p.externalId)}`;
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name)}`;
 }
+
+/** 보이는 이름만 바꿉니다(검색 이름은 그대로). 비우면 원래 이름으로. */
+export async function renamePlace(db: FavoritesDB, id: string, displayName: string): Promise<void> {
+  const n = cleanName(displayName);
+  const p = await db.places.get(id);
+  if (!p) throw new PlaceError('notFound');
+  if (p.source === 'name') {
+    if (!n) throw new PlaceError('empty');
+    await db.places.update(id, { name: n });
+    return;
+  }
+  await db.places.update(id, { displayName: n && n !== p.name ? n : undefined });
+}
