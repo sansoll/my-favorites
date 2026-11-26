@@ -2,7 +2,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-import { cspContent } from './src/security/csp';
+import { cspContent } from './src/security/csp.ts';
 import pkg from './package.json' with { type: 'json' };
 
 // GitHub Pages 주소: https://sansoll.github.io/my-favorites/

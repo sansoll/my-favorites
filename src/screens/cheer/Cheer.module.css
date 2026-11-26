@@ -1,0 +1,68 @@
+.addBtn { min-height: 2.5rem; padding: 0 0.875rem; border: 0; border-radius: 1.25rem; background: var(--accent); color: var(--on-accent); font-size: 0.875rem; font-weight: 700; }
+.search { min-height: 2.75rem; padding: 0 1rem; border: 1px solid var(--line); border-radius: 1.375rem; background: var(--soft); font-size: 0.9375rem; }
+.group { display: flex; flex-direction: column; }
+.groupTitle { display: flex; align-items: center; gap: 0.5rem; margin: 0; padding-bottom: 0.25rem; font-size: 0.8125rem; font-weight: 700; color: var(--text-sub); }
+.dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; }
+.songRow { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; min-height: 3.375rem; border-bottom: 1px solid var(--line-soft); color: var(--text); text-decoration: none; font-size: 1rem; }
+.songTitle { overflow-wrap: anywhere; }
+.views { flex: none; font-size: 0.8125rem; color: var(--text-sub); }
+.form { display: flex; flex-direction: column; gap: 0.875rem; }
+.textarea { padding: 0.625rem 0.75rem; border: 1.5px solid var(--line); border-radius: 0.75rem; background: var(--bg); font: inherit; font-size: 0.9375rem; line-height: 1.6; resize: vertical; }
+.textarea:focus { border-color: var(--accent); outline: none; }
+
+/* 곡 상세 */
+.screen { display: flex; flex-direction: column; min-height: 100%; }
+.top { display: flex; flex-direction: column; gap: 0.75rem; padding: 0.875rem 1.25rem 0.75rem; border-bottom: 1px solid var(--line-soft); }
+.topRow { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.heading { display: flex; align-items: center; min-width: 0; }
+.back { display: flex; align-items: center; justify-content: center; width: var(--tap); height: var(--tap); margin-left: -0.75rem; color: var(--text); text-decoration: none; }
+.who { display: block; font-size: 0.8125rem; color: var(--text-sub); }
+.songH1 { margin: 0; font-size: 1.25rem; font-weight: 700; overflow-wrap: anywhere; }
+.editBtn { flex: none; min-height: 2.5rem; padding: 0 1rem; border: 1px solid var(--line); border-radius: 1.25rem; background: var(--bg); font-size: 0.875rem; font-weight: 700; }
+.editOn { border: 0; background: var(--accent); color: var(--on-accent); }
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); padding: 3px; border-radius: 0.75rem; background: var(--soft); }
+.segBtn { min-height: 2.375rem; border: 0; border-radius: 0.5625rem; background: transparent; font-size: 0.875rem; font-weight: 700; color: var(--text-sub); }
+.segOn { background: var(--bg); color: var(--accent); }
+.memoBar { display: flex; justify-content: flex-end; gap: 0.5rem; }
+.pill { min-height: 2.25rem; padding: 0 0.75rem; border: 0; border-radius: 1.125rem; background: var(--soft); font-size: 0.8125rem; }
+.swatches { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: var(--text-sub); }
+.swatch { width: 2.25rem; height: 2.25rem; border-radius: 50%; border: 3px solid transparent; font-size: 0.75rem; font-weight: 700; color: var(--text-sub); }
+.swatchOn { border-color: var(--text); }
+.editHint { margin: 0; font-size: 0.8125rem; line-height: 1.5; color: var(--accent); }
+.body { flex: 1; display: flex; flex-direction: column; gap: 1rem; padding: 1rem 1.25rem 1.25rem; }
+.lyrics { display: flex; flex-direction: column; gap: 0.375rem; font-size: 1.125rem; line-height: 1.8; }
+.line { display: block; min-height: 1.8em; overflow-wrap: anywhere; }
+.lineChanged { box-shadow: inset 3px 0 0 var(--danger); padding-left: 0.5rem; }
+.word { display: inline; margin: 0 0.125rem 0.25rem 0; padding: 0.0625rem 0.1875rem; border: 0; border-radius: 0.375rem; background: transparent; font: inherit; color: var(--text); }
+button.word { cursor: pointer; }
+.editable { box-shadow: inset 0 -1px 0 var(--line); }
+.extra { display: inline; margin: 0 0.25rem 0.25rem 0; padding: 0.0625rem 0.375rem; border: 0; border-radius: 0.375rem; font: inherit; font-size: 0.9375rem; font-weight: 700; color: #1B1B1F; }
+.extraLine { display: block; }
+.extraLine .extra { font-size: 1.0625rem; padding: 0.0625rem 0.5rem; }
+.covered { background: var(--line) !important; color: transparent !important; cursor: pointer; }
+.links { display: flex; flex-direction: column; gap: 0.375rem; }
+.linksTitle { margin: 0; font-size: 0.8125rem; font-weight: 500; color: var(--text-sub); }
+.link { display: flex; align-items: center; min-height: 2.5rem; color: var(--accent); font-size: 0.9375rem; font-weight: 500; text-decoration: none; overflow-wrap: anywhere; }
+.linkRow { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.linkForm { display: grid; grid-template-columns: 1fr; gap: 0.5rem; }
+.bottom { position: sticky; bottom: 0; padding: 0.625rem 1.25rem; border-top: 1px solid var(--line-soft); background: var(--bg); }
+.stageBtn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; min-height: 3rem; border: 1.5px solid var(--accent); border-radius: 1.5rem; background: var(--bg); color: var(--accent); font-size: 0.9375rem; font-weight: 700; }
+.stageBtn:disabled { opacity: 0.4; }
+.stageNote { display: block; margin-top: 0.375rem; font-size: 0.75rem; text-align: center; color: var(--text-sub); }
+.editBar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
+.barBtn { min-height: 2.875rem; border: 1px solid var(--line); border-radius: 1.4375rem; background: var(--bg); font-size: 0.875rem; font-weight: 700; }
+.barDanger { border: 1.5px solid var(--danger); color: var(--danger); }
+.barSolid { border: 0; background: var(--danger); color: #fff; }
+.preview { padding: 0.75rem 0.875rem; border-radius: 0.75rem; background: var(--soft); font-size: 1rem; line-height: 1.8; white-space: pre-line; }
+.dangerOutline { min-height: 3rem; border: 1.5px solid var(--danger); border-radius: 1.5rem; background: var(--bg); color: var(--danger); font-size: 0.9375rem; font-weight: 700; }
+
+/* 공연장 모드 */
+.stage { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; background: #0E0E12; color: #F2F2F5; }
+.stageHead { display: flex; justify-content: space-between; align-items: center; padding: 0.875rem 1rem 0.625rem 1.25rem; }
+.stageWho { display: block; font-size: 0.8125rem; color: #A9A9B4; }
+.stageTitle { margin: 0; font-size: 1.25rem; font-weight: 700; }
+.stageClose { min-height: var(--tap); padding: 0 1.125rem; border: 0; border-radius: 1.375rem; background: #26262E; color: #F2F2F5; font-size: 0.9375rem; font-weight: 700; }
+.stageInfo { display: flex; align-items: center; gap: 0.5rem; margin: 0 1.25rem 0.5rem; padding: 0.5rem 0.75rem; border-radius: 0.625rem; background: #1A1A21; font-size: 0.75rem; color: #A9A9B4; }
+.stageDot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #4ADE80; }
+.stageBody { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0.875rem; padding: 0.75rem 1.25rem 2.5rem; font-size: 1.625rem; line-height: 1.6; font-weight: 500; }
+.stagePart { padding: 0.0625rem 0.25rem; border-radius: 0.5rem; }

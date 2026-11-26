@@ -32,3 +32,11 @@ describe('이름 도구 (U0-6)', () => {
     expect(josa('집', '으로/로')).toBe('집으로');
   });
 });
+
+import { withEulReul } from './name';
+it('목적격 조사: 받침 있으면 을, 없으면 를, 숫자 읽기, 영문은 을(를)', () => {
+  expect(withEulReul('곡 1')).toBe('곡 1을');
+  expect(withEulReul('노래')).toBe('노래를');
+  expect(withEulReul('곡 2')).toBe('곡 2를');
+  expect(withEulReul('Song')).toBe('Song을(를)');
+});
