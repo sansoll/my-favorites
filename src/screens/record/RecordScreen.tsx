@@ -58,7 +58,7 @@ export function RecordScreen() {
             onOpen={(t) => nav(`/record/${t.id}`)}
             onReorder={onReorder}
             onAction={onAction}
-            actions={['rename']}
+            clearDataLabel={'지출 데이터만 삭제'}
           />
         )}
         <button type="button" className={u.dashed} style={{ marginTop: '0.75rem' }} onClick={() => setAdding(true)}>+ 대상 추가</button>
@@ -71,12 +71,14 @@ export function RecordScreen() {
           </div>
           <ul style={{ listStyle: 'none', margin: 0, padding: 0 }} aria-label="최근 기록">
             {recent.map((r) => (
-              <li key={r.id} className={s.recent}>
-                <span className={s.recentMain}>
-                  <span className={s.recentTarget}>{r.target}</span>
-                  <span className={s.recentPath}>{r.path} · {r.date}</span>
-                </span>
-                <span className={s.recentAmount}>{r.amount}</span>
+              <li key={r.id}>
+                <Link to={`/records/${r.id}`} className={s.recent} style={{ color: 'inherit', textDecoration: 'none' }}>
+                  <span className={s.recentMain}>
+                    <span className={s.recentTarget}>{r.target}</span>
+                    <span className={s.recentPath}>{r.path} · {r.date}</span>
+                  </span>
+                  <span className={s.recentAmount}>{r.amount}</span>
+                </Link>
               </li>
             ))}
           </ul>

@@ -31,7 +31,7 @@ export function ListStepScreen({ step }: { step: 'category' | 'detail' }) {
   }, [step, targetId, categoryId]);
   const [editing, setEditing] = useState(false);
   const [adding, setAdding] = useState(false);
-  const { onReorder, onAction, sheet } = useListActions(step);
+  const { onReorder, onAction, sheet } = useListActions(step, { targetName: data?.target?.name, categoryName: data?.category?.name });
 
   if (!data) return null;
   if (!data.target || (step === 'detail' && !data.category)) {
@@ -71,7 +71,6 @@ export function ListStepScreen({ step }: { step: 'category' | 'detail' }) {
           onOpen={(x) => nav(step === 'category' ? `${base}/${x.id}` : `${base}/${category!.id}/${x.id}`)}
           onReorder={onReorder}
           onAction={onAction}
-          actions={['rename']}
         />
         <button type="button" className={u.dashed} style={{ marginTop: '0.75rem' }} onClick={() => setAdding(true)}>+ {noun} 추가</button>
         {step === 'detail' && (

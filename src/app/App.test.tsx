@@ -25,7 +25,7 @@ describe('하단 탭과 화면 이동 (U0-12)', () => {
     expect(screen.getByRole('heading', { level: 1, name: '기록' })).toBeInTheDocument();
     for (const name of ['내역', '통계', '응원법', '설정', '기록']) {
       await userEvent.click(screen.getByRole('link', { name }));
-      expect(screen.getByRole('heading', { level: 1, name })).toBeInTheDocument();
+      expect(await screen.findByRole('heading', { level: 1, name })).toBeInTheDocument();
       expect(screen.getByRole('link', { name })).toHaveAttribute('aria-current', 'page');
     }
   });

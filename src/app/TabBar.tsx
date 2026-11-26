@@ -20,7 +20,7 @@ export function TabBar() {
   return (
     <nav aria-label="하단 탭" className={s.bar}>
       {TABS.map((t) => {
-        const active = t.to === '/' ? inRecord : pathname.startsWith(t.to);
+        const active = t.to === '/' ? inRecord : t.to === '/history' ? pathname.startsWith('/history') || pathname.startsWith('/records') : pathname.startsWith(t.to);
         return (
           <Link key={t.to} to={t.to} className={`${s.tab} ${active ? s.active : ''}`} aria-current={active ? 'page' : undefined}>
             {t.icon}
