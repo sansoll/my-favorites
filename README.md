@@ -166,3 +166,17 @@
 
 - **1단계:** GitHub Pages(`https://sansoll.github.io/my-favorites/`)에 올리고 갤럭시 크롬에서 홈 화면에 설치합니다.
 - **2단계:** 같은 화면을 안드로이드 앱으로 감싸 APK를 GitHub에서 받아 설치합니다. 데이터는 내보내기·불러오기로 옮깁니다.
+
+## 개발하기
+
+Node 22 이상이 필요합니다.
+
+```bash
+npm install
+npm run dev        # http://localhost:5173/my-favorites/
+npm test           # 단위·화면 테스트 (Vitest)
+npm run e2e        # 전체 흐름 테스트 (Playwright, 갤럭시 화면 크기)
+npm run build      # dist/ 에 배포용 빌드
+```
+
+`main`에 올리면 GitHub Actions가 타입 검사, 테스트, 빌드를 차례로 돌리고, 모두 통과해야 GitHub Pages에 배포합니다.

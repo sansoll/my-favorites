@@ -1,0 +1,21 @@
+.wrap { display: flex; flex-direction: column; gap: 0.5rem; }
+.nav { display: flex; align-items: center; justify-content: center; gap: 1rem; }
+.navBtn {
+  width: var(--tap); min-height: var(--tap); border: 0; border-radius: 50%; background: none; font-size: 1.125rem;
+}
+.navBtn:disabled { color: var(--text-muted); opacity: 0.4; }
+.month { margin: 0; min-width: 8em; text-align: center; font-size: 1.0625rem; font-weight: 700; }
+.grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.25rem; text-align: center; }
+.wd { font-size: 0.75rem; color: var(--text-sub); padding: 0.25rem 0; }
+.sun { color: var(--danger); }
+.day {
+  aspect-ratio: 1; min-height: var(--tap); border: 0; border-radius: 50%; background: none; font-size: 0.9375rem;
+}
+.day:disabled { color: var(--text-muted); opacity: 0.45; }
+.today { border: 1.5px dashed var(--accent); }
+.selected { background: var(--accent); color: var(--on-accent); font-weight: 700; }
+.foot { display: flex; justify-content: center; }
+.todayBtn {
+  min-height: var(--tap); padding: 0 1rem; border: 0; border-radius: 1.375rem; background: var(--soft);
+  font-size: 0.875rem; font-weight: 700;
+}
