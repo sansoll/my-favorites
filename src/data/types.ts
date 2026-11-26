@@ -108,6 +108,12 @@ export interface SongOpen {
   at: number;
 }
 
+export interface CheckCover {
+  all: string | null;
+  months: Record<string, string | null>;
+  bg: boolean;
+}
+
 export interface CheckItem {
   id: string;
   targetId: string;
@@ -115,7 +121,8 @@ export interface CheckItem {
   color?: string;
   on: boolean;
   order: number;
-  cover?: { all: string | null; months: Record<string, string | null>; bg: boolean };
+  /** 달력 표지: 사진(blobs id). months의 달 설정이 all보다 먼저. bg는 사진 창문 보기 */
+  cover?: CheckCover;
   notifyApp?: string;
 }
 
@@ -149,6 +156,9 @@ export interface Blob_ {
   kind: 'photo' | 'font';
   name: string;
   data: Blob;
+  /** 사진의 픽셀 크기(줄인 뒤) */
+  width?: number;
+  height?: number;
 }
 
 export interface Setting {
