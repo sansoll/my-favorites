@@ -5,10 +5,12 @@ import { routes } from '../../app/App';
 import { ToastProvider } from '../../components/Toast';
 import { listPresets } from '../../data/repo/presets';
 import { freshDb } from '../../test/db';
+import { setSetting } from '../../data/settings';
 import type { FavoritesDB } from '../../data/db';
 
 let db: FavoritesDB;
-beforeEach(() => { db = freshDb(); });
+// 튜토리얼은 tutorial.test.tsx에서 따로 봅니다.
+beforeEach(async () => { db = freshDb(); await setSetting(db, 'tutorialDone', true); });
 
 function renderApp(path = '/') {
   const router = createMemoryRouter(routes, { initialEntries: [path] });

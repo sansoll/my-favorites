@@ -78,6 +78,7 @@ export function SettingsScreen() {
         <Link to="/settings/presets" className={s.row}><span>프리셋</span><span className={s.meta}>{presets.length ? presets.map((p) => p.name).join(' · ') : '없음'} ›</span></Link>
         <Link to="/settings/theme" className={s.row}><span>테마와 꾸미기</span><span className={s.meta}>{themeName} ›</span></Link>
         <Link to="/settings/recurring" className={s.row}><span>정기 결제</span><span className={s.meta}>{recurrings.length ? `${recurrings.filter((x) => x.enabled).length}개 켜짐` : '없음'} ›</span></Link>
+        <Link to="/tutorial" className={s.row}><span>튜토리얼 다시 보기</span><span className={s.meta}>›</span></Link>
       </section>
 
       <section className={s.group}>
