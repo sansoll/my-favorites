@@ -88,7 +88,7 @@ describe('테마 화면 (U9-4)', () => {
     expect(await screen.findByText('사진 테마 1을 적용했어요')).toBeInTheDocument();
     const t = await activeTheme(db);
     expect(t).toMatchObject({ name: '사진 테마 1', accent: '#00AA55' });
-    expect(await screen.findByRole('radio', { name: /사진 테마 1/ })).toBeChecked();
+    await waitFor(() => expect(screen.getByRole('radio', { name: /사진 테마 1/ })).toBeChecked());
   });
 
   it('색이 한 가지뿐인 사진은 전부 그 색, 다른 조합 없음', async () => {
@@ -113,12 +113,12 @@ describe('글꼴 (U9-5)', () => {
     const bytes = new Uint8Array(64); bytes.set(new TextEncoder().encode('wOF2'));
     await userEvent.upload(input, new File([bytes], '손글씨.woff2'), { applyAccept: false });
     expect(await screen.findByText('손글씨 글꼴을 적용했어요')).toBeInTheDocument();
-    expect(await within(dlg).findByRole('radio', { name: /손글씨/ })).toBeChecked();
+    await waitFor(() => expect(within(dlg).getByRole('radio', { name: /손글씨/ })).toBeChecked());
     const id = (await listFonts(db))[0].id;
     expect(await activeFontId(db)).toBe(id);
     await userEvent.click(within(dlg).getByRole('button', { name: '손글씨 글꼴 지우기' }));
     await waitFor(async () => expect(await activeFontId(db)).toBeNull());
-    expect(await within(dlg).findByRole('radio', { name: /기본 글꼴/ })).toBeChecked();
+    await waitFor(() => expect(within(dlg).getByRole('radio', { name: /기본 글꼴/ })).toBeChecked());
   });
 });
 
