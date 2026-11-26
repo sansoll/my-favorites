@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import s from './TabBar.module.css';
 
 const icon = (d: React.ReactNode) => (
@@ -14,14 +14,20 @@ export const TABS = [
 ] as const;
 
 export function TabBar() {
+  const { pathname } = useLocation();
+  // 분류·세부·금액 화면도 기록 탭에 속합니다.
+  const inRecord = pathname === '/' || pathname.startsWith('/record');
   return (
     <nav aria-label="하단 탭" className={s.bar}>
-      {TABS.map((t) => (
-        <NavLink key={t.to} to={t.to} end={t.to === '/'} className={({ isActive }) => `${s.tab} ${isActive ? s.active : ''}`}>
-          {t.icon}
-          {t.label}
-        </NavLink>
-      ))}
+      {TABS.map((t) => {
+        const active = t.to === '/' ? inRecord : pathname.startsWith(t.to);
+        return (
+          <Link key={t.to} to={t.to} className={`${s.tab} ${active ? s.active : ''}`} aria-current={active ? 'page' : undefined}>
+            {t.icon}
+            {t.label}
+          </Link>
+        );
+      })}
     </nav>
   );
 }

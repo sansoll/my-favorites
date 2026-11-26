@@ -5,6 +5,8 @@ import { HistoryScreen } from '../screens/history/HistoryScreen';
 import { RecordScreen } from '../screens/record/RecordScreen';
 import { SettingsScreen } from '../screens/settings/SettingsScreen';
 import { StatsScreen } from '../screens/stats/StatsScreen';
+import { AmountScreen } from '../screens/record/AmountScreen';
+import { ListStepScreen } from '../screens/record/ListStepScreen';
 import { Layout } from './Layout';
 
 /** GitHub Pages는 서버 설정이 없어서 `#/history` 같은 해시 주소를 씁니다. */
@@ -13,6 +15,9 @@ export const routes: RouteObject[] = [
     element: <Layout />,
     children: [
       { path: '/', element: <RecordScreen /> },
+      { path: '/record/:targetId', element: <ListStepScreen step="category" /> },
+      { path: '/record/:targetId/:categoryId', element: <ListStepScreen key="detail" step="detail" /> },
+      { path: '/record/:targetId/:categoryId/:detailId', element: <AmountScreen />, handle: { hideTabs: true } },
       { path: '/history', element: <HistoryScreen /> },
       { path: '/stats', element: <StatsScreen /> },
       { path: '/cheer', element: <CheerScreen /> },

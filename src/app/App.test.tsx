@@ -2,7 +2,10 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { ToastProvider } from '../components/Toast';
+import { freshDb } from '../test/db';
 import { routes } from './App';
+
+beforeEach(() => { freshDb(); });
 
 function renderAt(path = '/') {
   const router = createMemoryRouter(routes, { initialEntries: [path] });
@@ -33,6 +36,11 @@ describe('하단 탭과 화면 이동 (U0-12)', () => {
     await userEvent.click(screen.getByRole('link', { name: '설정' }));
     await router.navigate(-1);
     expect(await screen.findByRole('heading', { level: 1, name: '통계' })).toBeInTheDocument();
+  });
+
+  it('분류 화면에서도 기록 탭이 현재 탭', async () => {
+    renderAt('/record/x');
+    expect(await screen.findByRole('link', { name: '기록' })).toHaveAttribute('aria-current', 'page');
   });
 
   it('없는 주소는 기록 화면', () => {
