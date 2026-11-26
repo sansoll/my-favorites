@@ -1,3 +1,4 @@
+import { TargetBanner } from '../../components/TargetPhoto';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -51,6 +52,7 @@ export function ListStepScreen({ step }: { step: 'category' | 'detail' }) {
 
   return (
     <div className={s.screen}>
+      <TargetBanner photoId={target.photoId} name={target.name} />
       <div className={s.crumbs}>
         <Link to={step === 'category' ? '/' : base} className={s.back} aria-label="뒤로">‹</Link>
         <Link to={base} className={s.crumb}><span className={s.dot} style={{ background: target.color }} aria-hidden="true" />{target.name}</Link>

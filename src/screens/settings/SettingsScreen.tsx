@@ -6,6 +6,7 @@ import { listPresets } from '../../data/repo/presets';
 import { listRecurrings } from '../../data/repo/recurring';
 import { BackupError, exportFileName, exportText, importData, lastExportAt, readBackupFile, wipeAll, type BackupFile } from '../../data/backup';
 import { saveTextFile } from '../../services/file';
+import { activeTheme } from '../../data/repo/theme';
 import { Screen } from '../../components/Screen';
 import { Sheet } from '../../components/Sheet';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
@@ -25,6 +26,7 @@ export function SettingsScreen() {
   const presets = useLiveQuery(() => listPresets(getDb()), []) ?? [];
   const recurrings = useLiveQuery(() => listRecurrings(getDb()), []) ?? [];
   const lastExport = useLiveQuery(() => lastExportAt(getDb()), []);
+  const themeName = useLiveQuery(async () => (await activeTheme(getDb())).name, []) ?? '';
   const fileRef = useRef<HTMLInputElement>(null);
   const [sheet, setSheet] = useState<'export' | 'info' | null>(null);
   const [pending, setPending] = useState<BackupFile | null>(null);
@@ -74,6 +76,7 @@ export function SettingsScreen() {
       <section className={s.group}>
         <h2 className={s.groupTitle}>목록과 꾸미기</h2>
         <Link to="/settings/presets" className={s.row}><span>프리셋</span><span className={s.meta}>{presets.length ? presets.map((p) => p.name).join(' · ') : '없음'} ›</span></Link>
+        <Link to="/settings/theme" className={s.row}><span>테마와 꾸미기</span><span className={s.meta}>{themeName} ›</span></Link>
         <Link to="/settings/recurring" className={s.row}><span>정기 결제</span><span className={s.meta}>{recurrings.length ? `${recurrings.filter((x) => x.enabled).length}개 켜짐` : '없음'} ›</span></Link>
       </section>
 
