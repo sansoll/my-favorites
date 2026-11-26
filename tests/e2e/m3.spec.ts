@@ -22,16 +22,16 @@ test('정기 결제 추가 → 기록 탭 안내 → 앱을 다시 열어도 같
   await sheet.getByRole('textbox', { name: '금액' }).fill('4500');
   await sheet.getByRole('combobox', { name: '결제일' }).selectOption(String(tomorrow));
   await sheet.getByRole('button', { name: '저장' }).click();
+  await page.getByRole('dialog', { name: '이번 달은 어떻게 할까요?' }).getByRole('button', { name: /이번 달부터/ }).click();
   await expect(page.getByRole('list', { name: '정기 결제' })).toContainText(`매달 ${tomorrow}일`);
 
   await page.getByRole('link', { name: '기록' }).click();
   await expect(page.getByRole('link', { name: /내일 정기 결제가 있어요/ })).toBeVisible();
 
-  // 내일이 다음 달 1일이면 이번 달 몫은 없고 다음 달에 만들어집니다.
-  const expected = tomorrow === 1 ? 0 : 1;
+  const expected = 1;
   await page.reload();
   await page.getByRole('link', { name: '내역' }).click();
-  if (expected) await expect(page.getByText('4,500원').first()).toBeVisible();
+  await expect(page.getByText('4,500원').first()).toBeVisible();
   const count = await page.evaluate(async () => {
     const req = indexedDB.open('my-favorites');
     const db: IDBDatabase = await new Promise((res) => { req.onsuccess = () => res(req.result); });

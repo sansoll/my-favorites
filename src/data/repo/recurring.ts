@@ -1,7 +1,7 @@
 import { monthOf, parseDateStr, today, type DateStr } from '../../domain/date';
 import { isValidAmount } from '../../domain/money';
 import {
-  DEFAULT_NOTIFY, LEAD_DAYS, daysBetween, monthsToMake, payDateOf, payDatesWithin, startLastMonth, type NotifySettings,
+  DEFAULT_NOTIFY, LEAD_DAYS, daysBetween, monthsToMake, payDateOf, payDatesWithin, prevMonth, startLastMonth, type NotifySettings,
 } from '../../domain/recurring';
 import { newId, type FavoritesDB } from '../db';
 import { getSetting, setSetting } from '../settings';
@@ -32,6 +32,9 @@ export interface RecurringInput {
   day: number;
 }
 
+/** 처음 만들 때 이번 달 몫도 만들지(thisMonth), 다음 달부터 만들지(nextMonth) */
+export type RecurringStart = 'thisMonth' | 'nextMonth';
+
 function checkDay(day: number) {
   if (!Number.isInteger(day) || day < 1 || day > 31) throw new RecurringError('day');
 }
@@ -46,13 +49,16 @@ async function resolveList(db: FavoritesDB, input: { targetId: string; categoryI
   return { targetId: t.id, categoryId: c.id, detailId: d.id };
 }
 
-/** 정기 결제 화면에서 추가. 이번 달 결제일이 남았으면 이번 달 예정 기록부터 만듭니다. */
-export async function addRecurring(db: FavoritesDB, input: RecurringInput, todayStr: DateStr = today()): Promise<Recurring> {
+/**
+ * 정기 결제 화면에서 추가. 추가할 때 사용자에게 이번 달도 넣을지 묻습니다.
+ * `thisMonth`면 이번 달 결제일 기록(지났으면 지난 날짜, 남았으면 예정)을 바로 만들고, `nextMonth`면 다음 달부터 만듭니다.
+ */
+export async function addRecurring(db: FavoritesDB, input: RecurringInput, start: RecurringStart, todayStr: DateStr = today()): Promise<Recurring> {
   if (!isValidAmount(input.amount)) throw new RecurringError('amount');
   checkDay(input.day);
   const r = await db.transaction('rw', db.recurrings, db.targets, db.categories, db.details, async () => {
     const list = await resolveList(db, input);
-    const rec: Recurring = { id: newId(), ...list, amount: input.amount, day: input.day, enabled: true, lastMonth: startLastMonth(todayStr, input.day) };
+    const rec: Recurring = { id: newId(), ...list, amount: input.amount, day: input.day, enabled: true, lastMonth: start === 'thisMonth' ? prevMonth(monthOf(todayStr)) : monthOf(todayStr) };
     await db.recurrings.add(rec);
     return rec;
   });

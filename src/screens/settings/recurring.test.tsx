@@ -42,12 +42,16 @@ describe('정기 결제 화면 (U3-3)', () => {
     await userEvent.type(within(sheet).getByRole('textbox', { name: '금액' }), '4500');
     await userEvent.selectOptions(within(sheet).getByRole('combobox', { name: '결제일' }), '28');
     await userEvent.click(within(sheet).getByRole('button', { name: '저장' }));
+    const ask = await screen.findByRole('dialog', { name: '이번 달은 어떻게 할까요?' });
+    expect(ask).toHaveTextContent('28일 기록도 지금 만들어요');
+    await userEvent.click(within(ask).getByRole('button', { name: /다음 달부터/ }));
     const list = await screen.findByRole('list', { name: '정기 결제' });
     await within(list).findByText('매달 28일');
     expect(list).toHaveTextContent('가수 A · 멤버십 › 버블');
     expect(list).toHaveTextContent('4,500원');
     const r = (await db.recurrings.toArray())[0];
     expect(r).toMatchObject({ amount: 4500, day: 28, enabled: true });
+    expect(await db.records.count()).toBe(0);
   });
 
   it('분류를 바꾸면 세부를 다시 고름', async () => {
@@ -66,7 +70,7 @@ describe('정기 결제 화면 (U3-3)', () => {
   it('켜기·끄기, 수정, 삭제(이미 만든 기록은 남음)', async () => {
     const { a, mem, bubble } = await seed();
     const day = parseDateStr(addDays(today(), 3)).d;
-    await addRecurring(db, { targetId: a.id, categoryId: mem.id, detailId: bubble.id, amount: 4500, day });
+    await addRecurring(db, { targetId: a.id, categoryId: mem.id, detailId: bubble.id, amount: 4500, day }, 'thisMonth');
     const made = await db.records.count();
     renderApp('/settings/recurring');
     const sw = await screen.findByRole('switch', { name: /가수 A · 멤버십 › 버블 켜기/ });
@@ -106,6 +110,20 @@ describe('정기 결제 화면 (U3-3)', () => {
   });
 });
 
+it('이번 달부터를 고르면 이번 달 기록도 바로 생김', async () => {
+  await seed();
+  renderApp('/settings/recurring');
+  await userEvent.click(await screen.findByRole('button', { name: '+ 정기 결제 추가' }));
+  const sheet = await screen.findByRole('dialog', { name: '정기 결제 추가' });
+  await userEvent.click(await within(sheet).findByRole('radio', { name: '가수 A' }));
+  await userEvent.click(await within(sheet).findByRole('radio', { name: '멤버십' }));
+  await userEvent.type(within(sheet).getByRole('textbox', { name: '금액' }), '1000');
+  await userEvent.selectOptions(within(sheet).getByRole('combobox', { name: '결제일' }), '1');
+  await userEvent.click(within(sheet).getByRole('button', { name: '저장' }));
+  await userEvent.click(within(await screen.findByRole('dialog', { name: '이번 달은 어떻게 할까요?' })).getByRole('button', { name: /이번 달부터/ }));
+  await waitFor(async () => expect((await db.records.toArray()).map((x) => x.date)).toEqual([`${today().slice(0, 7)}-01`]));
+});
+
 describe('금액 화면의 매달 반복 (U3-3)', () => {
   it('켜면 설명이 보이고, 저장하면 정기 결제도 생김', async () => {
     const { a, mem, bubble } = await seed();
@@ -130,7 +148,7 @@ describe('금액 화면의 매달 반복 (U3-3)', () => {
 describe('기록 탭 안내 (U3-2)', () => {
   it('내일 결제가 있으면 안내가 보이고, 누르면 정기 결제 화면', async () => {
     const { a, mem, bubble } = await seed();
-    await addRecurring(db, { targetId: a.id, categoryId: mem.id, detailId: bubble.id, amount: 4500, day: parseDateStr(addDays(today(), 1)).d });
+    await addRecurring(db, { targetId: a.id, categoryId: mem.id, detailId: bubble.id, amount: 4500, day: parseDateStr(addDays(today(), 1)).d }, 'thisMonth');
     const router = renderApp('/');
     const link = await screen.findByRole('link', { name: /내일 정기 결제가 있어요/ });
     await userEvent.click(link);
@@ -139,7 +157,7 @@ describe('기록 탭 안내 (U3-2)', () => {
 
   it('결제가 멀면 안내 없음', async () => {
     const { a, mem, bubble } = await seed();
-    await addRecurring(db, { targetId: a.id, categoryId: mem.id, detailId: bubble.id, amount: 4500, day: parseDateStr(addDays(today(), 5)).d });
+    await addRecurring(db, { targetId: a.id, categoryId: mem.id, detailId: bubble.id, amount: 4500, day: parseDateStr(addDays(today(), 5)).d }, 'thisMonth');
     renderApp('/');
     await screen.findByRole('heading', { name: '기록' });
     await new Promise((r) => setTimeout(r, 50));

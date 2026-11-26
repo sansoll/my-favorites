@@ -10,3 +10,8 @@
 .rowBtn { width: 100%; padding: 0; border: 0; border-bottom: 1px solid var(--line-soft); background: none; text-align: left; }
 .rowBtn:disabled { opacity: 0.5; }
 .form { display: flex; flex-direction: column; gap: 0.875rem; }
+.opt {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0.125rem; width: 100%; min-height: 3.75rem; padding: 0.625rem 0.875rem;
+  border: 1.5px solid var(--line); border-radius: 0.75rem; background: var(--bg); text-align: left; font-size: 0.9375rem; font-weight: 700;
+}
+.optSub { font-size: 0.8125rem; font-weight: 400; color: var(--text-sub); }

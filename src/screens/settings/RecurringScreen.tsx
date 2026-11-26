@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getDb } from '../../data/db';
 import {
-  addRecurring, deleteRecurring, getNotify, listRecurrings, RecurringError, setNotify, setRecurringEnabled, updateRecurring,
+  addRecurring, deleteRecurring, type RecurringStart, getNotify, listRecurrings, RecurringError, setNotify, setRecurringEnabled, updateRecurring,
 } from '../../data/repo/recurring';
 import type { Recurring } from '../../data/types';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
@@ -12,8 +12,9 @@ import { Sheet } from '../../components/Sheet';
 import { Switch } from '../../components/Switch';
 import { useToast } from '../../components/Toast';
 import { formatNumber, formatWon, parseDigits } from '../../domain/money';
-import { formatTime, NOTIFY_WHEN_LABELS, type NotifySettings, type NotifyWhen } from '../../domain/recurring';
+import { formatTime, nextMonth, NOTIFY_WHEN_LABELS, payDateOf, type NotifySettings, type NotifyWhen } from '../../domain/recurring';
 import { useLookups } from '../../hooks/useLookups';
+import { formatMonthDay, monthOf, today } from '../../domain/date';
 import { askPermissionOnce } from '../../services/notify';
 import u from '../../components/ui.module.css';
 import r from '../record/Record.module.css';
@@ -40,6 +41,7 @@ export function RecurringScreen() {
   const [err, setErr] = useState<string | null>(null);
   const [confirmDel, setConfirmDel] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
+  const [asking, setAsking] = useState(false);
 
   if (!items || !notify || !l) return null;
 
@@ -55,11 +57,14 @@ export function RecurringScreen() {
     setDraft(x ? { id: x.id, pick: { targetId: x.targetId, categoryId: x.categoryId, detailId: x.detailId }, amount: x.amount, day: x.day } : { pick: {}, amount: 0, day: new Date().getDate() });
   };
 
-  const save = async () => {
+  /** 새 결제는 저장 전에 이번 달도 넣을지 한 번 묻습니다. */
+  const save = async (start?: RecurringStart) => {
     if (!draft) return;
     const db = getDb();
     const { targetId, categoryId, detailId } = draft.pick;
     if (!targetId || !categoryId) { setErr('대상과 분류를 골라 주세요.'); return; }
+    if (!draft.id && !start) { setAsking(true); return; }
+    setAsking(false);
     const input = { targetId, categoryId, detailId, amount: draft.amount, day: draft.day };
     try {
       if (draft.id) {
@@ -67,7 +72,7 @@ export function RecurringScreen() {
         toast('저장했어요');
       } else {
         void askPermissionOnce(db);
-        await addRecurring(db, input);
+        await addRecurring(db, input, start!);
         toast('정기 결제를 추가했어요');
       }
       setDraft(null);
@@ -127,7 +132,7 @@ export function RecurringScreen() {
         <button type="button" className={u.dashed} style={{ marginTop: '0.75rem' }} onClick={() => open()}>+ 정기 결제 추가</button>
       </section>
 
-      <Sheet open={!!draft} onClose={() => setDraft(null)} title={draft?.id ? '정기 결제 수정' : '정기 결제 추가'}>
+      <Sheet open={!!draft && !asking} onClose={() => setDraft(null)} title={draft?.id ? '정기 결제 수정' : '정기 결제 추가'}>
         {draft && (
           <div className={s.form}>
             <ListPicker value={draft.pick} onChange={(pick) => setDraft({ ...draft, pick })} detailOptional />
@@ -165,6 +170,26 @@ export function RecurringScreen() {
           </label>
           <button type="button" className={u.primary} onClick={() => setTimeOpen(false)}>완료</button>
         </div>
+      </Sheet>
+
+      <Sheet open={asking} onClose={() => setAsking(false)} title="이번 달은 어떻게 할까요?">
+        {draft && (() => {
+          const todayStr = today();
+          const thisDate = payDateOf(monthOf(todayStr), draft.day);
+          const nextDate = payDateOf(nextMonth(monthOf(todayStr)), draft.day);
+          return (
+            <div className={s.form}>
+              <button type="button" className={s.opt} onClick={() => void save('thisMonth')}>
+                이번 달부터
+                <span className={s.optSub}>{formatMonthDay(thisDate)} 기록도 지금 만들어요{thisDate > todayStr ? ' (예정)' : ''}</span>
+              </button>
+              <button type="button" className={s.opt} onClick={() => void save('nextMonth')}>
+                다음 달부터
+                <span className={s.optSub}>{formatMonthDay(nextDate)}부터 기록해요. 이번 달 것은 직접 기록했을 때</span>
+              </button>
+            </div>
+          );
+        })()}
       </Sheet>
 
       <ConfirmDialog open={confirmDel} title="정기 결제를 삭제할까요?" body="이미 만든 기록은 그대로 남아요." onCancel={() => setConfirmDel(false)} onConfirm={() => void del()} />
