@@ -11,6 +11,8 @@ import { useToast } from '../../components/Toast';
 import { formatDateLong, isScheduled, today } from '../../domain/date';
 import { formatNumber, formatWon, MAX_DIGITS, parseDigits } from '../../domain/money';
 import { useLookups } from '../../hooks/useLookups';
+import { PlaceSheet } from '../../components/PlaceSheet';
+import { linkNamePlace, mapUrl, placeLabel } from '../../data/repo/places';
 import u from '../../components/ui.module.css';
 import r from '../record/Record.module.css';
 import s from './Detail.module.css';
@@ -23,8 +25,9 @@ export function RecordDetailScreen() {
   const todayStr = today();
   const rec = useLiveQuery(() => getDb().records.get(id).then((x) => x ?? null), [id]);
   const lk = useLookups();
+  const placeOf = useLiveQuery(async () => (await getDb().places.toArray()), []);
   const [draft, setDraft] = useState<RecordEdit | null>(null);
-  const [sheet, setSheet] = useState<'date' | 'list' | null>(null);
+  const [sheet, setSheet] = useState<'date' | 'list' | 'place' | 'link' | null>(null);
   const [pick, setPick] = useState<Partial<ListPick>>({});
   const [confirmDel, setConfirmDel] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -40,7 +43,7 @@ export function RecordDetailScreen() {
   }
 
   const editing = draft !== null;
-  const v: RecordEdit = draft ?? { date: rec.date, targetId: rec.targetId, categoryId: rec.categoryId, detailId: rec.detailId, paid: rec.paid, refund: rec.refund, memo: rec.memo, etcText: rec.etcText };
+  const v: RecordEdit = draft ?? { date: rec.date, targetId: rec.targetId, categoryId: rec.categoryId, detailId: rec.detailId, paid: rec.paid, refund: rec.refund, memo: rec.memo, etcText: rec.etcText, placeId: rec.placeId };
   const t = lk.targets.get(v.targetId);
   const c = lk.categories.get(v.categoryId);
   const d = lk.details.get(v.detailId);
@@ -126,6 +129,27 @@ export function RecordDetailScreen() {
         {editing ? money('결제 금액', 'paid') : <div className={s.row}><span className={s.label}>결제 금액</span><span className={s.value}>{formatWon(v.paid)}</span></div>}
         {editing ? money('환불 금액', 'refund') : <div className={s.row}><span className={s.label}>환불 금액</span><span className={s.value}>{formatWon(v.refund)}</span></div>}
         <div className={s.row}><span className={s.label}>집계 금액</span><span className={`${s.value} ${s.net}`}>{formatWon(Math.max(0, v.paid - v.refund))}</span></div>
+        {(() => {
+          const pl = v.placeId ? placeOf?.find((x) => x.id === v.placeId) : undefined;
+          if (editing) {
+            return (
+              <button type="button" className={s.row} onClick={() => setSheet('place')}>
+                <span className={s.label}>장소</span>
+                <span className={s.value}>{pl ? placeLabel(pl) : <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>없음</span>} ›</span>
+              </button>
+            );
+          }
+          if (!pl) return <div className={s.row}><span className={s.label}>장소</span><span className={s.value} style={{ color: 'var(--text-muted)', fontWeight: 400 }}>없음</span></div>;
+          return (
+            <div className={s.row}>
+              <span className={s.label}>장소</span>
+              <span className={s.value}>
+                <a href={mapUrl(pl)} target="_blank" rel="noopener noreferrer" aria-label={`${placeLabel(pl)} 지도에서 열기`}>{placeLabel(pl)} ↗</a>
+                {pl.source === 'name' && <button type="button" className={s.link} onClick={() => setSheet('link')}>장소 연결하기</button>}
+              </span>
+            </div>
+          );
+        })()}
         {editing
           ? <label className={s.row}><span className={s.label}>메모</span><input className={`${s.input} ${s.textInput}`} maxLength={500} value={v.memo} onChange={(e) => set({ memo: e.target.value })} /></label>
           : <div className={s.row}><span className={s.label}>메모</span><span className={s.value} style={v.memo ? undefined : { color: 'var(--text-muted)', fontWeight: 400 }}>{v.memo || '메모 없음'}</span></div>}
@@ -145,6 +169,9 @@ export function RecordDetailScreen() {
         <ListPicker value={pick} onChange={setPick} detailOptional />
         <button type="button" className={u.primary} disabled={!pick.targetId} onClick={() => void applyPick()}>이걸로</button>
       </Sheet>
+      <PlaceSheet open={sheet === 'place'} value={v.placeId} onClose={() => setSheet(null)} onPick={(id) => { set({ placeId: id ?? undefined }); setSheet(null); }} />
+      <PlaceSheet open={sheet === 'link'} onClose={() => setSheet(null)} onPick={() => setSheet(null)}
+        linkMode={{ onResult: async (res) => { if (!rec.placeId) return; await linkNamePlace(getDb(), rec.placeId, res); setSheet(null); toast('장소를 연결했어요'); } }} />
       <ConfirmDialog open={confirmDel} title="이 기록을 삭제할까요?" body="내역과 통계에서 빠져요." onCancel={() => setConfirmDel(false)} onConfirm={() => void del()} />
     </div>
   );

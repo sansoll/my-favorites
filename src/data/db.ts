@@ -4,7 +4,8 @@ import type {
   Setting, Song, SongOpen, SpendRecord, Target, Theme,
 } from './types';
 
-export const DB_NAME = 'my-favorites';
+/** 미리보기 빌드는 저장소를 따로 써서 본 앱 데이터에 영향을 주지 않습니다. */
+export const DB_NAME = __PREVIEW__ ? 'my-favorites-preview' : 'my-favorites';
 
 /**
  * 저장 구조 v1 (DESIGN 3장).

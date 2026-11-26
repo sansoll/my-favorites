@@ -50,6 +50,8 @@ export interface RecordEdit {
   refund: number;
   memo: string;
   etcText: string;
+  /** 비우면 장소 없음 */
+  placeId?: string;
 }
 
 /** 기록 수정. 환불은 결제 금액 이하(전액 환불도 기록은 남음). */

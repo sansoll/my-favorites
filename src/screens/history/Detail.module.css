@@ -17,3 +17,4 @@
 .actions { display: grid; grid-template-columns: 1fr 2fr; gap: 0.625rem; margin-top: 1rem; }
 .del { min-height: 3.25rem; border: 0; border-radius: 1.625rem; background: color-mix(in srgb, var(--danger) 12%, var(--bg)); color: var(--danger); font-weight: 700; }
 .badge { padding: 0.0625rem 0.4375rem; border-radius: 0.625rem; background: color-mix(in srgb, var(--accent) 14%, var(--bg)); color: var(--accent); font-size: 0.6875rem; font-weight: 700; }
+.link { min-height: 2rem; padding: 0 0.625rem; border: 0; border-radius: 1rem; background: var(--soft); font-size: 0.75rem; font-weight: 700; color: var(--accent); }

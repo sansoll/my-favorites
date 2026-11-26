@@ -7,6 +7,8 @@ import { addRecurringFromRecord, getNotify } from '../../data/repo/recurring';
 import { askPermissionOnce } from '../../services/notify';
 import { repeatSummary } from '../../domain/recurring';
 import { Switch } from '../../components/Switch';
+import { PlaceSheet } from '../../components/PlaceSheet';
+import { placeLabel } from '../../data/repo/places';
 import { DatePicker } from '../../components/DatePicker';
 import { Keypad } from '../../components/Keypad';
 import { Sheet } from '../../components/Sheet';
@@ -36,6 +38,9 @@ export function AmountScreen() {
   const [memo, setMemo] = useState('');
   const [saving, setSaving] = useState(false);
   const [repeat, setRepeat] = useState(false);
+  const [placeId, setPlaceId] = useState<string | undefined>();
+  const [placing, setPlacing] = useState(false);
+  const place = useLiveQuery(async () => (placeId ? (await getDb().places.get(placeId)) ?? null : null), [placeId]);
   const notify = useLiveQuery(() => getNotify(getDb()), []);
 
   if (!data) return null;
@@ -55,7 +60,7 @@ export function AmountScreen() {
     try {
       const db = getDb();
       if (repeat) void askPermissionOnce(db);
-      const rec = await saveRecord(db, { targetId, categoryId, detailId, paid: amount, date, etcText, memo });
+      const rec = await saveRecord(db, { targetId, categoryId, detailId, paid: amount, date, etcText, memo, placeId });
       if (repeat) await addRecurringFromRecord(db, rec.id);
       const name = detail.isEtc && etcText.trim() ? etcText.trim() : detail.name;
       toast(`${target.name} › ${category.name} › ${name} ${formatWon(amount)}을 저장했어요`);
@@ -89,6 +94,13 @@ export function AmountScreen() {
             <span aria-hidden="true">›</span>
           </span>
         </button>
+        <button type="button" className={s.row} onClick={() => setPlacing(true)}>
+          <span className={s.rowLabel}>장소</span>
+          <span className={s.rowValue}>
+            {place ? placeLabel(place) : <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>선택</span>}
+            <span aria-hidden="true">›</span>
+          </span>
+        </button>
         <div className={s.row}>
           <span className={`${s.rowLabel} ${s.grow1}`}>
             매달 반복
@@ -111,6 +123,7 @@ export function AmountScreen() {
       <div className={s.grow} />
       <Keypad value={amount} onChange={setAmount} />
       <button type="button" className={u.primary} disabled={!amount || saving} onClick={() => void save()}>저장</button>
+      <PlaceSheet open={placing} value={placeId} onClose={() => setPlacing(false)} onPick={(id) => { setPlaceId(id ?? undefined); setPlacing(false); }} />
       <Sheet open={picking} onClose={() => setPicking(false)} title="날짜">
         <DatePicker value={date} today={todayStr} onSelect={(d) => { setDate(d); setPicking(false); }} />
       </Sheet>

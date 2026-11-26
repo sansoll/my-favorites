@@ -2,7 +2,7 @@ name: 테스트와 배포
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'feat/**']
   pull_request:
   workflow_dispatch:
 
@@ -34,8 +34,18 @@ jobs:
           npm run e2e
       - name: 빌드
         run: npm run build
+      # 작업 브랜치(feat/…)는 본 사이트(main)를 그대로 두고 /preview/에 이 브랜치 버전을 얹습니다.
+      # 미리보기는 저장소 이름이 달라서 본 앱 데이터에 영향이 없습니다.
+      - name: 미리보기 빌드 (작업 브랜치)
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/feat/')
+        run: |
+          PREVIEW=1 npx vite build --outDir dist-preview
+          git fetch --depth=1 origin main
+          git worktree add ../main-src FETCH_HEAD
+          (cd ../main-src && npm ci && npx vite build --outDir "$GITHUB_WORKSPACE/dist-main")
+          rm -rf dist && mv dist-main dist && mv dist-preview dist/preview
       - uses: actions/upload-pages-artifact@v3
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/feat/'))
         with:
           path: dist
 
@@ -43,8 +53,12 @@ jobs:
   deploy:
     name: GitHub Pages 배포
     needs: test
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/feat/'))
     runs-on: ubuntu-latest
+    # 배포는 한 번에 하나씩(브랜치가 달라도 같은 사이트라서)
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
     permissions:
       pages: write
       id-token: write
