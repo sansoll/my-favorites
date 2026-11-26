@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getDb } from '../../data/db';
 import { listTargets } from '../../data/repo/lists';
 import { recentRecords } from '../../data/repo/records';
+import { upcomingPayments } from '../../data/repo/recurring';
+import { bannerText } from '../../domain/recurring';
 import { EditableList } from '../../components/EditableList';
 import { formatMonthDay, today } from '../../domain/date';
 import { formatWon } from '../../domain/money';
@@ -30,6 +32,10 @@ export function RecordScreen() {
       return { id: r.id, target: t?.name ?? '', path: `${c?.name ?? ''} › ${d?.isEtc && r.etcText ? r.etcText : d?.name ?? ''}`, date: formatMonthDay(r.date), amount: formatWon(net(r)) };
     }));
   }, [todayStr]) ?? [];
+  const upcoming = useLiveQuery(async () => {
+    const db = getDb();
+    return upcomingPayments(db, todayStr);
+  }, [todayStr]);
   const [editing, setEditing] = useState(false);
   const [adding, setAdding] = useState(false);
   const { onReorder, onAction, sheet } = useListActions('target');
@@ -43,6 +49,13 @@ export function RecordScreen() {
         </div>
         <button type="button" className={u.ghost} aria-pressed={editing} onClick={() => setEditing(!editing)}>{editing ? '완료' : '편집'}</button>
       </div>
+      {upcoming && upcoming.length > 0 && (
+        <Link to="/settings/recurring" className={s.notice}>
+          <span aria-hidden="true">🔔</span>
+          <span className={s.noticeText}>{bannerText(upcoming[0].diff)}</span>
+          <span aria-hidden="true">›</span>
+        </Link>
+      )}
       <Link to="/stats" className={s.card} style={{ textDecoration: 'none', color: 'inherit' }}>
         <span className={s.cardLabel}>이번 달 지출</span>
         <span className={s.cardValue}>{formatWon(totals.total)}</span>
