@@ -31,7 +31,7 @@
 .list { gap: 0; }
 .listRow { display: flex; justify-content: space-between; gap: 0.75rem; padding: 0.625rem 0; border-bottom: 1px solid var(--line-soft); font-size: 0.875rem; }
 .amountStrong { font-weight: 500; white-space: nowrap; }
-.links { display: grid; grid-template-columns: 1fr; gap: 0.625rem; }
+.links { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; }
 .placesBtn {
   display: flex; align-items: center; justify-content: center; gap: 0.375rem; min-height: 3.25rem; border-radius: 1.625rem;
   background: var(--soft); color: var(--text); font-size: 0.9375rem; font-weight: 700; text-decoration: none;

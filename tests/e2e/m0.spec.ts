@@ -15,6 +15,7 @@ test('하단 탭으로 화면 이동 (U0-12)', async ({ page }) => {
 
 test('설치 조건과 오프라인 (U0-2)', async ({ page, context }) => {
   await page.goto('./');
+  await closePresetDialog(page);
   const manifest = await page.request.get('manifest.webmanifest');
   expect(manifest.ok()).toBe(true);
   const m = await manifest.json();

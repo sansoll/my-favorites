@@ -3,6 +3,8 @@ import { ToastProvider } from '../components/Toast';
 import { CheerScreen } from '../screens/cheer/CheerScreen';
 import { SongScreen } from '../screens/cheer/SongScreen';
 import { ThemeScreen } from '../screens/settings/ThemeScreen';
+import { RecapScreen } from '../screens/stats/RecapScreen';
+import { TutorialScreen } from '../screens/tutorial/TutorialScreen';
 import { HistoryScreen } from '../screens/history/HistoryScreen';
 import { RecordScreen } from '../screens/record/RecordScreen';
 import { SettingsScreen } from '../screens/settings/SettingsScreen';
@@ -30,6 +32,8 @@ export const routes: RouteObject[] = [
       { path: '/records/:id', element: <RecordDetailScreen /> },
       { path: '/stats', element: <StatsScreen /> },
       { path: '/stats/places', element: <VisitedScreen /> },
+      { path: '/stats/recap/:year', element: <RecapScreen />, handle: { hideTabs: true } },
+      { path: '/tutorial', element: <TutorialScreen />, handle: { hideTabs: true } },
       { path: '/cheer', element: <CheerScreen /> },
       { path: '/cheer/:id', element: <SongScreen /> },
       { path: '/settings', element: <SettingsScreen /> },

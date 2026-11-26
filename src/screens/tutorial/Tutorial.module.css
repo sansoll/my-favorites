@@ -1,0 +1,39 @@
+.wrap { position: fixed; inset: 0; z-index: 44; display: flex; flex-direction: column; background: var(--bg); }
+.mock { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 0.625rem; padding: 1.5rem 1.25rem 1rem; position: relative; }
+.mock::after { content: ''; position: absolute; inset: 0; background: rgba(20, 20, 26, 0.5); pointer-events: none; z-index: 1; }
+.hl { position: relative; z-index: 2; align-self: flex-start; min-height: var(--tap); padding: 0 1rem; border: 0; border-radius: 1.375rem; background: var(--accent); color: var(--on-accent); font-weight: 700; animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, white); } 50% { box-shadow: 0 0 0 10px transparent; } }
+@media (prefers-reduced-motion: reduce) { .hl { animation: none; box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 50%, white); } }
+.wide { align-self: stretch; min-height: 3.25rem; border-radius: 1.625rem; }
+.rowHl { align-self: stretch; display: flex; justify-content: space-between; align-items: center; min-height: 3.25rem; border-radius: 0.75rem; background: var(--bg); color: var(--text); text-align: left; }
+.rowHl .sub { color: var(--text-sub); }
+.h { margin: 0 0 0.25rem; font-size: 1.375rem; font-weight: 700; }
+.row { display: flex; justify-content: space-between; align-items: center; min-height: 3rem; border-bottom: 1px solid var(--line-soft); }
+.dot { display: inline-block; width: 0.5rem; height: 0.5rem; margin-right: 0.5rem; border-radius: 50%; }
+.sub { color: var(--text-sub); font-size: 0.875rem; }
+.sheet { display: flex; flex-direction: column; gap: 0.75rem; margin-top: auto; padding: 1.25rem; border-radius: 1.375rem; background: var(--bg); border: 1px solid var(--line); }
+.input { min-height: 3rem; padding: 0.75rem; border: 1.5px solid var(--line); border-radius: 0.75rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip { padding: 0.375rem 0.875rem; border: 1.5px solid var(--line); border-radius: 1.25rem; font-size: 0.875rem; font-weight: 700; }
+.chipOn { border-color: var(--accent); color: var(--accent); }
+.ghost { align-self: flex-start; padding: 0.5rem 0.875rem; border-radius: 1.25rem; background: var(--soft); font-size: 0.875rem; font-weight: 700; }
+.amount { margin: 0.25rem 0; font-size: 2rem; font-weight: 700; }
+.between { display: flex; justify-content: space-between; align-items: center; }
+.seg { display: flex; gap: 0.25rem; padding: 0.25rem; border-radius: 0.75rem; background: var(--bg); color: var(--text); }
+.seg span { padding: 0.375rem 0.875rem; border-radius: 0.5rem; }
+.segOn { background: var(--accent); color: var(--on-accent); }
+.lyric { margin: 0; font-size: 1.125rem; line-height: 1.8; }
+.cards { display: flex; gap: 0.625rem; }
+.card { width: 5.5rem; height: 5.5rem; display: flex; align-items: flex-end; justify-content: center; padding: 0.5rem; border-radius: var(--radius-card); background: var(--soft); font-size: 0.8125rem; font-weight: 700; }
+.guide { display: flex; flex-direction: column; gap: 0.375rem; min-height: 13.5rem; margin: 0 1rem 1rem; padding: 1.125rem 1.25rem 1rem; border-radius: 1.375rem; background: var(--bg); box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18); position: relative; z-index: 3; }
+.count { margin: 0; font-size: 0.8125rem; font-weight: 700; color: var(--accent); }
+.gTitle { margin: 0; font-size: 1.125rem; font-weight: 700; }
+.gBody { flex: 1; margin: 0; font-size: 0.9375rem; line-height: 1.6; color: var(--text-sub); }
+.gBtns { display: flex; align-items: center; gap: 0.5rem; }
+.spacer { flex: 1; }
+.skip { min-height: var(--tap); padding: 0 0.5rem; border: 0; background: none; color: var(--text-sub); font-size: 0.875rem; font-weight: 700; }
+.prev, .next { min-height: var(--tap); padding: 0 1.125rem; border: 0; border-radius: 1.375rem; font-weight: 700; }
+.prev { background: var(--soft); }
+.prev:disabled { opacity: 0.4; }
+.next { background: var(--accent); color: var(--on-accent); }
+.start { margin: 0 1rem 1.25rem; min-height: 3.25rem; border: 0; border-radius: 1.625rem; background: var(--accent); color: var(--on-accent); font-size: 1.0625rem; font-weight: 700; position: relative; z-index: 3; }

@@ -4,8 +4,9 @@ import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { ToastProvider } from '../components/Toast';
 import { freshDb } from '../test/db';
 import { routes } from './App';
+import { setSetting } from '../data/settings';
 
-beforeEach(() => { freshDb(); });
+beforeEach(async () => { await setSetting(freshDb(), 'tutorialDone', true); });
 
 function renderAt(path = '/') {
   const router = createMemoryRouter(routes, { initialEntries: [path] });
