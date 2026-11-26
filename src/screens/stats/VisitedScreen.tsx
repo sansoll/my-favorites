@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useState } from 'react';
+import { lazy, Suspense, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getDb } from '../../data/db';
 import { linkNamePlace, mapUrl, placeLabel, renamePlace } from '../../data/repo/places';
@@ -14,6 +14,10 @@ import { recordPath, useLookups } from '../../hooks/useLookups';
 import u from '../../components/ui.module.css';
 import r from '../record/Record.module.css';
 import s from './Visited.module.css';
+import { useVisitCoords } from './useVisitCoords';
+import type { MapPoint } from './VisitMap';
+
+const VisitMap = lazy(() => import('./VisitMap'));
 
 const SORTS: Record<VisitSort, string> = { count: '많이 간 순', recent: '최근 순', spend: '많이 쓴 순' };
 const SOURCE = { kakao: '카카오', osm: 'OSM', name: '이름만' } as const;
@@ -33,9 +37,23 @@ export function VisitedScreen() {
     return { records, places: new Map(places.map((p) => [p.id, p])) };
   }, []);
   const l = useLookups();
+  const visits = useMemo(() => (data ? computeVisits(data.records, data.places, scope === 'year' ? year : null, sort) : []), [data, scope, year, sort]);
+  const visitPlaces = useMemo(() => visits.map((v) => v.place), [visits]);
+  const { coords, loading } = useVisitCoords(visitPlaces);
+  const coordSig = visits.map((v) => { const c = coords.get(v.place.id); return c ? `${v.place.id}@${c.lat},${c.lng}#${v.count}` : ''; }).join('|');
+  const points = useMemo<MapPoint[]>(() => visits.flatMap((v, i) => {
+    const c = coords.get(v.place.id);
+    return c ? [{ id: v.place.id, lat: c.lat, lng: c.lng, count: v.count, label: placeLabel(v.place), rank: i + 1 }] : [];
+  }),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [coordSig]);
   if (!data || !l) return null;
-  const visits = computeVisits(data.records, data.places, scope === 'year' ? year : null, sort);
   const totalVisits = visits.reduce((n, v) => n + v.count, 0);
+  const offMap = visits.length - points.length;
+  const selectFromMap = (id: string) => {
+    setOpen(id);
+    requestAnimationFrame(() => document.getElementById(`visit-${id}`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+  };
 
   return (
     <div className={r.screen}>
@@ -51,6 +69,14 @@ export function VisitedScreen() {
         </div>
       </div>
       <p className={s.summary}>{scope === 'year' ? `${year}년에` : '지금까지'} <strong>{visits.length}곳 · {totalVisits}번</strong> 다녀왔어요</p>
+      <div className={s.mapBox}>
+        <Suspense fallback={null}>
+          <VisitMap points={points} selectedId={open} onSelect={selectFromMap} />
+        </Suspense>
+        {visits.length > 0 && (loading || offMap > 0) && (
+          <p className={s.mapNote} role="status">{loading ? '지도에 찍는 중…' : `${offMap}곳은 지도에 없어요(이름만 남긴 곳 등)`}</p>
+        )}
+      </div>
       <div className={u.chips} role="radiogroup" aria-label="정렬">
         {(Object.keys(SORTS) as VisitSort[]).map((k) => (
           <button key={k} type="button" role="radio" aria-checked={sort === k} className={`${u.chip} ${sort === k ? u.chipOn : ''}`} onClick={() => setSort(k)}>{SORTS[k]}</button>
@@ -64,11 +90,12 @@ export function VisitedScreen() {
             const isOpen = open === v.place.id;
             const name = placeLabel(v.place);
             return (
-              <li key={v.place.id} className={s.item}>
+              <li key={v.place.id} id={`visit-${v.place.id}`} className={s.item}>
                 <button type="button" className={s.row} aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : v.place.id)}>
                   <span className={s.rank}>{i + 1}</span>
                   <span className={s.name}>{name}</span>
                   <span className={s.badge}>{SOURCE[v.place.source]}</span>
+                  {!loading && !coords.has(v.place.id) && <span className={s.off}>지도 없음</span>}
                   <span className={s.count}>{v.count}번</span>
                   <span aria-hidden="true" className={s.caret}>{isOpen ? '▴' : '▾'}</span>
                 </button>

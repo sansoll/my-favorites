@@ -16,6 +16,7 @@
   --radius-card: 14px;
   --radius-sheet: 22px;
   --tap: 2.75rem; /* 44px */
+  --row: 2.875rem; /* 목록 한 줄(46px). 누르기 쉬운 크기(44px)는 지키면서 화면을 짧게 */
   --font: 'Noto Sans KR', 'Noto Sans CJK KR', system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif;
   color-scheme: light;
 }

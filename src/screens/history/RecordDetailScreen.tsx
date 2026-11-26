@@ -6,6 +6,7 @@ import { deleteRecords, EditError, mapToTarget, restoreRecords, updateRecord, ty
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { DatePicker } from '../../components/DatePicker';
 import { ListPicker, type ListPick } from '../../components/ListPicker';
+import { MemoSheet } from '../../components/MemoSheet';
 import { Sheet } from '../../components/Sheet';
 import { useToast } from '../../components/Toast';
 import { formatDateLong, isScheduled, today } from '../../domain/date';
@@ -27,7 +28,7 @@ export function RecordDetailScreen() {
   const lk = useLookups();
   const placeOf = useLiveQuery(async () => (await getDb().places.toArray()), []);
   const [draft, setDraft] = useState<RecordEdit | null>(null);
-  const [sheet, setSheet] = useState<'date' | 'list' | 'place' | 'link' | null>(null);
+  const [sheet, setSheet] = useState<'date' | 'list' | 'place' | 'link' | 'memo' | null>(null);
   const [pick, setPick] = useState<Partial<ListPick>>({});
   const [confirmDel, setConfirmDel] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -151,7 +152,7 @@ export function RecordDetailScreen() {
           );
         })()}
         {editing
-          ? <label className={s.row}><span className={s.label}>메모</span><input className={`${s.input} ${s.textInput}`} maxLength={500} value={v.memo} onChange={(e) => set({ memo: e.target.value })} /></label>
+          ? <button type="button" className={s.row} aria-haspopup="dialog" onClick={() => setSheet('memo')}><span className={s.label}>메모</span><span className={s.value} style={v.memo ? undefined : { color: 'var(--text-muted)', fontWeight: 400 }}>{v.memo || '추가'} ›</span></button>
           : <div className={s.row}><span className={s.label}>메모</span><span className={s.value} style={v.memo ? undefined : { color: 'var(--text-muted)', fontWeight: 400 }}>{v.memo || '메모 없음'}</span></div>}
       </div>
       {editing && refundTooBig && <p className={s.warn} role="alert">환불 금액은 결제 금액보다 클 수 없어요.</p>}
@@ -169,6 +170,7 @@ export function RecordDetailScreen() {
         <ListPicker value={pick} onChange={setPick} detailOptional />
         <button type="button" className={u.primary} disabled={!pick.targetId} onClick={() => void applyPick()}>이걸로</button>
       </Sheet>
+      <MemoSheet open={sheet === 'memo'} value={v.memo ?? ''} onClose={() => setSheet(null)} onSave={(m) => { set({ memo: m }); setSheet(null); }} />
       <PlaceSheet open={sheet === 'place'} value={v.placeId} onClose={() => setSheet(null)} onPick={(id) => { set({ placeId: id ?? undefined }); setSheet(null); }} />
       <PlaceSheet open={sheet === 'link'} onClose={() => setSheet(null)} onPick={() => setSheet(null)}
         linkMode={{ onResult: async (res) => { if (!rec.placeId) return; await linkNamePlace(getDb(), rec.placeId, res); setSheet(null); toast('장소를 연결했어요'); } }} />

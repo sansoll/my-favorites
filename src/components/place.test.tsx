@@ -143,3 +143,39 @@ describe('기록 상세의 장소 (U5-4)', () => {
     await waitFor(async () => expect((await db.records.get(r.id))!.placeId).toBeDefined());
   });
 });
+
+describe('카카오가 안 될 때 (휴대폰 피드백)', () => {
+  it('카카오가 거절하면 이유를 알려 주고, OpenStreetMap으로 한 번 찾아 고를 수 있음', async () => {
+    domestic = async () => { throw new SearchError('blocked'); };
+    overseas = async (q) => (q === '고척돔' ? [{ source: 'osm', externalId: 'W9', name: '고척스카이돔', sub: '서울 구로구' }] : []);
+    await amountScreen();
+    await userEvent.click(screen.getByRole('button', { name: /^장소/ }));
+    const sheet = await screen.findByRole('dialog', { name: '어디였나요?' });
+    await userEvent.type(within(sheet).getByRole('textbox', { name: '장소 검색어' }), '고척돔');
+    expect(await within(sheet).findByRole('alert')).toHaveTextContent('카카오 검색이 응답하지 않아요');
+    expect(overseasCalls).toEqual([]);
+    await userEvent.click(within(sheet).getByRole('button', { name: 'OpenStreetMap으로 찾기' }));
+    await userEvent.click(await within(sheet).findByRole('button', { name: /^고척스카이돔/ }));
+    expect(overseasCalls).toEqual(['고척돔']);
+    await userEvent.click(within(sheet).getByRole('button', { name: '이 장소로' }));
+    expect(await screen.findByRole('button', { name: /^장소\s*고척스카이돔/ })).toBeInTheDocument();
+  });
+});
+
+describe('메모 시트 (휴대폰 피드백)', () => {
+  it('메모는 시트에서 쓰고 `메모 저장`을 눌러야 반영, 그냥 닫으면 그대로', async () => {
+    await amountScreen();
+    await userEvent.click(screen.getByRole('button', { name: /^메모/ }));
+    let sheet = await screen.findByRole('dialog', { name: '메모' });
+    await userEvent.type(within(sheet).getByRole('textbox', { name: '메모' }), '첫콘 굿즈');
+    await userEvent.click(within(sheet).getByRole('button', { name: '메모 저장' }));
+    expect(await screen.findByRole('button', { name: /^메모\s*첫콘 굿즈/ })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /^메모/ }));
+    sheet = await screen.findByRole('dialog', { name: '메모' });
+    await userEvent.type(within(sheet).getByRole('textbox', { name: '메모' }), ' 추가');
+    await userEvent.keyboard('{Escape}');
+    expect(screen.getByRole('button', { name: /^메모\s*첫콘 굿즈›?$/ })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: '저장' }));
+    await waitFor(async () => expect((await db.records.toArray())[0]?.memo).toBe('첫콘 굿즈'));
+  });
+});

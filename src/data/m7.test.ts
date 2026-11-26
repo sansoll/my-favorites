@@ -167,7 +167,7 @@ describe('보안 (U7-4)', () => {
     expect(c).toContain("default-src 'self'");
     expect(c).toContain("object-src 'none'");
     const hosts = Object.values(CSP_DIRECTIVES).flat().filter((v) => v.startsWith('https://'));
-    for (const h of hosts) expect(h).toMatch(/kakao\.com$|daumcdn\.net$|openstreetmap\.org$/);
+    for (const h of hosts) expect(h).toMatch(/kakao\.com$|daumcdn\.net$|kakaocdn\.net$|openstreetmap\.org$/);
     expect(CSP_DIRECTIVES['script-src']).not.toContain("'unsafe-inline'");
     expect(CSP_DIRECTIVES['script-src']).not.toContain("'unsafe-eval'");
   });

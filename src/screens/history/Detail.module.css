@@ -1,6 +1,6 @@
 .rows { display: flex; flex-direction: column; }
 .row {
-  display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; min-height: 3.25rem;
+  display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; min-height: var(--row);
   padding: 0; border: 0; border-bottom: 1px solid var(--line-soft); background: none; font-size: 0.9375rem; text-align: left; width: 100%;
 }
 .label { flex: none; color: var(--text-sub); }
