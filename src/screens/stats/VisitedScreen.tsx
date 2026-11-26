@@ -2,12 +2,14 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { lazy, Suspense, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getDb } from '../../data/db';
-import { linkNamePlace, mapUrl, placeLabel, renamePlace } from '../../data/repo/places';
+import { linkNamePlace, mapUrl, mergePlaces, placeLabel, renamePlace } from '../../data/repo/places';
 import type { Visit } from '../../domain/stats';
 import { computeVisits, type VisitSort } from '../../domain/stats';
 import { formatMonthDay, today } from '../../domain/date';
 import { formatWon } from '../../domain/money';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { NameSheet } from '../../components/NameSheet';
+import { Sheet } from '../../components/Sheet';
 import { PlaceSheet } from '../../components/PlaceSheet';
 import { useToast } from '../../components/Toast';
 import { recordPath, useLookups } from '../../hooks/useLookups';
@@ -31,6 +33,8 @@ export function VisitedScreen() {
   const [open, setOpen] = useState<string | null>(null);
   const [renaming, setRenaming] = useState<Visit | null>(null);
   const [linking, setLinking] = useState<Visit | null>(null);
+  const [merging, setMerging] = useState<Visit | null>(null);
+  const [mergeInto, setMergeInto] = useState<Visit | null>(null);
   const data = useLiveQuery(async () => {
     const db = getDb();
     const [records, places] = await Promise.all([db.records.toArray(), db.places.toArray()]);
@@ -49,6 +53,14 @@ export function VisitedScreen() {
   [coordSig]);
   if (!data || !l) return null;
   const totalVisits = visits.reduce((n, v) => n + v.count, 0);
+  const allVisits = merging ? computeVisits(data.records, data.places, null, 'count').filter((v) => v.place.id !== merging.place.id) : [];
+  const doMerge = async () => {
+    if (!merging || !mergeInto) return;
+    await mergePlaces(getDb(), merging.place.id, mergeInto.place.id);
+    setOpen(mergeInto.place.id);
+    setMerging(null); setMergeInto(null);
+    toast('같은 곳으로 합쳤어요');
+  };
   const offMap = visits.length - points.length;
   const selectFromMap = (id: string) => {
     setOpen(id);
@@ -121,6 +133,7 @@ export function VisitedScreen() {
                       <a className={s.action} href={mapUrl(v.place)} target="_blank" rel="noopener noreferrer">{v.place.source === 'kakao' ? '카카오맵에서 열기' : '구글 지도에서 열기'}</a>
                       <button type="button" className={s.action} onClick={() => setRenaming(v)}>이름 바꾸기</button>
                       {v.place.source === 'name' && <button type="button" className={s.action} onClick={() => setLinking(v)}>장소 연결하기</button>}
+                      <button type="button" className={s.action} onClick={() => setMerging(v)}>같은 곳 합치기</button>
                     </div>
                   </div>
                 )}
@@ -145,6 +158,31 @@ export function VisitedScreen() {
       >
         {renaming && renaming.place.source !== 'name' && <p className={u.hint}>검색 이름({renaming.place.name})은 그대로 두고 보이는 이름만 바꿔요. 비우면 원래 이름으로 돌아가요.</p>}
       </NameSheet>
+      <Sheet open={!!merging && !mergeInto} onClose={() => setMerging(null)} title="같은 곳 합치기" kicker={merging ? `${placeLabel(merging.place)}의 기록을 옮길 곳` : undefined}>
+        <p className={u.hint}>카카오와 해외 검색으로 따로 넣은 같은 장소를 하나로 모아요. 고른 곳으로 기록이 옮겨지고, 지금 장소는 목록에서 사라져요.</p>
+        {allVisits.length === 0 ? <p className={u.hint}>합칠 다른 장소가 없어요.</p> : (
+          <ul className={s.recs} aria-label="합칠 장소">
+            {allVisits.map((x) => (
+              <li key={x.place.id}>
+                <button type="button" className={s.row} onClick={() => setMergeInto(x)}>
+                  <span className={s.name}>{placeLabel(x.place)}</span>
+                  <span className={s.badge}>{SOURCE[x.place.source]}</span>
+                  <span className={s.count}>{x.count}번</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Sheet>
+      <ConfirmDialog
+        open={!!merging && !!mergeInto}
+        title="같은 곳으로 합칠까요?"
+        body={merging && mergeInto ? `‘${placeLabel(merging.place)}’ 기록을 ‘${placeLabel(mergeInto.place)}’(으)로 옮기고, ‘${placeLabel(merging.place)}’는 지워요.` : undefined}
+        confirmLabel="합치기"
+        danger={false}
+        onConfirm={() => void doMerge()}
+        onCancel={() => setMergeInto(null)}
+      />
       <PlaceSheet open={!!linking} onClose={() => setLinking(null)} onPick={() => setLinking(null)}
         linkMode={{ onResult: async (res) => { if (!linking) return; await linkNamePlace(getDb(), linking.place.id, res); setLinking(null); setOpen(null); toast('장소를 연결했어요'); } }} />
     </div>

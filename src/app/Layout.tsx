@@ -1,3 +1,4 @@
+import { KeyboardDismiss } from './KeyboardDismiss';
 import { Outlet, useMatches } from 'react-router-dom';
 import { FirstRun } from './FirstRun';
 import { ThemeApplier } from './ThemeApplier';
@@ -15,6 +16,7 @@ export function Layout() {
       {!hideTabs && <TabBar />}
       <FirstRun />
       <ThemeApplier />
+      <KeyboardDismiss />
     </div>
   );
 }
