@@ -105,3 +105,25 @@ describe('다녀온 곳 지도 (휴대폰 피드백)', () => {
     expect(await db.places.get(kspo.id)).not.toHaveProperty('lat');
   });
 });
+
+describe('같은 곳 합치기 (휴대폰 피드백)', () => {
+  it('카카오·해외로 따로 넣은 같은 곳을 합치면 기록이 한 곳으로 모이고 한쪽은 지워짐', async () => {
+    const { a } = await seed();
+    const ev = (await listCategories(db, a.id)).find((c) => c.name === '행사')!;
+    const kakao = await searchPlace(db, { source: 'kakao', externalId: 'K1', name: '올림픽체조경기장' });
+    const osm = await searchPlace(db, { source: 'osm', externalId: 'W2', name: 'KSPO DOME' });
+    await saveRecord(db, { targetId: a.id, categoryId: ev.id, paid: 1000, placeId: kakao.id, date: `${today().slice(0, 4)}-01-02` });
+    await saveRecord(db, { targetId: a.id, categoryId: ev.id, paid: 1000, placeId: osm.id, date: `${today().slice(0, 4)}-01-03` });
+    renderApp('/stats/places');
+    await userEvent.click(await screen.findByRole('button', { name: /KSPO DOME/ }));
+    await userEvent.click(screen.getByRole('button', { name: '같은 곳 합치기' }));
+    const sheet = await screen.findByRole('dialog', { name: '같은 곳 합치기' });
+    await userEvent.click(within(within(sheet).getByRole('list', { name: '합칠 장소' })).getByRole('button', { name: /올림픽체조경기장/ }));
+    const dlg = await screen.findByRole('alertdialog', { name: '같은 곳으로 합칠까요?' });
+    await userEvent.click(within(dlg).getByRole('button', { name: '합치기' }));
+    expect(await screen.findByText('같은 곳으로 합쳤어요')).toBeInTheDocument();
+    expect(await db.places.get(osm.id)).toBeUndefined();
+    expect((await db.records.toArray()).filter((r) => r.placeId === kakao.id)).toHaveLength(2);
+    expect(screen.getByRole('button', { name: /올림픽체조경기장.*2번/ })).toBeInTheDocument();
+  });
+});

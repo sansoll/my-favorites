@@ -54,6 +54,21 @@ export async function linkNamePlace(db: FavoritesDB, namePlaceId: string, pick: 
   });
 }
 
+/**
+ * 같은 곳인데 따로 들어간 두 장소를 하나로 합칩니다(예: 카카오 `올림픽체조경기장`과 OSM `KSPO DOME`).
+ * `fromId`의 기록이 모두 `intoId`로 옮겨지고 `fromId` 장소는 지웁니다. 보이는 이름은 남기는 쪽을 따릅니다.
+ */
+export async function mergePlaces(db: FavoritesDB, fromId: string, intoId: string): Promise<Place> {
+  if (fromId === intoId) throw new PlaceError('notFound');
+  return db.transaction('rw', db.places, db.records, async () => {
+    const [from, into] = await Promise.all([db.places.get(fromId), db.places.get(intoId)]);
+    if (!from || !into) throw new PlaceError('notFound');
+    await db.records.where('placeId').equals(from.id).modify({ placeId: into.id });
+    await db.places.delete(from.id);
+    return into;
+  });
+}
+
 export function placeLabel(p: Place): string {
   return p.displayName || p.name;
 }
