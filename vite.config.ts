@@ -2,6 +2,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { cspContent } from './src/security/csp';
+import pkg from './package.json' with { type: 'json' };
 
 // GitHub Pages 주소: https://sansoll.github.io/my-favorites/
 // 미리보기(PREVIEW=1)는 /my-favorites/preview/에 올리고, 저장소 이름도 따로 씁니다.
@@ -10,9 +12,15 @@ const BASE = PREVIEW ? '/my-favorites/preview/' : '/my-favorites/';
 
 export default defineConfig({
   base: BASE,
-  define: { __PREVIEW__: JSON.stringify(PREVIEW) },
+  define: { __PREVIEW__: JSON.stringify(PREVIEW), __APP_VERSION__: JSON.stringify(pkg.version) },
   plugins: [
     react(),
+    {
+      // 배포 빌드에만 보안 정책(CSP)을 넣습니다. 개발 서버는 HMR 때문에 넣지 않습니다.
+      name: 'csp-meta',
+      apply: 'build',
+      transformIndexHtml: () => [{ tag: 'meta', attrs: { 'http-equiv': 'Content-Security-Policy', content: cspContent() }, injectTo: 'head-prepend' }],
+    },
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon.svg'],
