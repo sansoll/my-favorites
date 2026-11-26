@@ -1,6 +1,7 @@
 import { createHashRouter, RouterProvider, type RouteObject } from 'react-router-dom';
 import { ToastProvider } from '../components/Toast';
 import { CheerScreen } from '../screens/cheer/CheerScreen';
+import { SongScreen } from '../screens/cheer/SongScreen';
 import { HistoryScreen } from '../screens/history/HistoryScreen';
 import { RecordScreen } from '../screens/record/RecordScreen';
 import { SettingsScreen } from '../screens/settings/SettingsScreen';
@@ -29,6 +30,7 @@ export const routes: RouteObject[] = [
       { path: '/stats', element: <StatsScreen /> },
       { path: '/stats/places', element: <VisitedScreen /> },
       { path: '/cheer', element: <CheerScreen /> },
+      { path: '/cheer/:id', element: <SongScreen /> },
       { path: '/settings', element: <SettingsScreen /> },
       { path: '/settings/presets', element: <PresetsScreen /> },
       { path: '/settings/recurring', element: <RecurringScreen /> },

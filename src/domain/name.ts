@@ -33,3 +33,21 @@ export function josa(word: string, pair: JosaPair): string {
   if (pair === '으로/로') return word + (jong === 0 || jong === 8 ? without : withBatchim); // ㄹ 받침은 '로'
   return word + (jong ? withBatchim : without);
 }
+
+const DIGIT_BATCHIM = [true, true, false, true, false, false, true, true, true, false];
+
+/** 끝 글자에 받침이 있으면 true, 알 수 없으면 null(영문 등) */
+function hasBatchim(word: string): boolean | null {
+  const ch = word.trim().slice(-1);
+  if (!ch) return null;
+  const code = ch.charCodeAt(0);
+  if (code >= 0xac00 && code <= 0xd7a3) return (code - 0xac00) % 28 !== 0;
+  if (ch >= '0' && ch <= '9') return DIGIT_BATCHIM[Number(ch)];
+  return null;
+}
+
+/** 이름 뒤 목적격 조사: 곡 1을, 노래를, Song을(를) */
+export function withEulReul(word: string): string {
+  const b = hasBatchim(word);
+  return `${word}${b === null ? '을(를)' : b ? '을' : '를'}`;
+}
