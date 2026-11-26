@@ -35,6 +35,8 @@ export function PlaceSheet({ open, value, onClose, onPick, linkMode }: PlaceShee
   const [results, setResults] = useState<PlaceResult[] | null>(null);
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
   const [err, setErr] = useState<string | null>(null);
+  /** 카카오가 안 될 때 국내 탭에서 OpenStreetMap으로 한 번 찾아보기 */
+  const [osmFallback, setOsmFallback] = useState(false);
   const [pick, setPick] = useState<Pick | null>(null);
   const recent = useLiveQuery(() => recentPlaces(getDb()), []) ?? [];
   const reqId = useRef(0);
@@ -48,6 +50,7 @@ export function PlaceSheet({ open, value, onClose, onPick, linkMode }: PlaceShee
     const id = ++reqId.current;
     setStatus('loading');
     setErr(null);
+    setOsmFallback(false);
     try {
       const svc = getPlaceServices()[which];
       const rs = await svc.search(query);
@@ -60,8 +63,10 @@ export function PlaceSheet({ open, value, onClose, onPick, linkMode }: PlaceShee
       setStatus('error');
       const reason = e instanceof SearchError ? e.reason : 'failed';
       setErr(reason === 'offline' ? '인터넷이 없어서 찾을 수 없어요. 이름만 남겨 두고 나중에 연결할 수 있어요.'
-        : reason === 'unavailable' ? '지금은 국내 검색을 쓸 수 없어요. 이름만 남겨 두세요.'
+        : reason === 'unavailable' ? '지금은 카카오 검색을 쓸 수 없어요. OpenStreetMap으로 찾거나 이름만 남겨 두세요.'
+        : reason === 'blocked' ? '카카오 검색이 응답하지 않아요. OpenStreetMap으로 찾거나 이름만 남겨 두세요.'
         : '검색이 잘 안 됐어요. 잠시 뒤 다시 해 보거나 이름만 남겨 두세요.');
+      setOsmFallback(which === 'domestic' && reason !== 'offline');
     }
   };
 
@@ -154,6 +159,9 @@ export function PlaceSheet({ open, value, onClose, onPick, linkMode }: PlaceShee
           )}
           {empty && <p className={u.hint} role="status">{tab === 'domestic' ? '결과가 없어요. 해외 장소라면 해외 탭에서 찾아보세요.' : hasHangul(query) ? '결과가 없어요. 해외 장소는 영어나 현지어로 찾아보세요. 예: 도쿄돔 → Tokyo Dome' : '결과가 없어요. 다른 이름으로 찾아보세요.'}</p>}
           {err && <p className={u.error} role="alert">{err}</p>}
+          {err && osmFallback && tab === 'domestic' && query && (
+            <button type="button" className={u.ghost} style={{ alignSelf: 'flex-start' }} onClick={() => void run(query, 'overseas')}>OpenStreetMap으로 찾기</button>
+          )}
           {tab === 'overseas' && !searched && status === 'idle' && query && <p className={u.hint}>입력하고 `검색`을 눌러 주세요.</p>}
         </div>
 

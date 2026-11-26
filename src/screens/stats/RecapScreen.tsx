@@ -125,7 +125,7 @@ export function RecapScreen() {
             <article
               key={c.kind}
               className={`${s.card} ${k === i ? s.cardOn : ''}`}
-              style={{ transform: `translateX(${(k - i) * 86}%) scale(${k === i ? 1 : 0.86})`, background: `linear-gradient(160deg, ${TINTS[k % TINTS.length]}, color-mix(in srgb, ${TINTS[k % TINTS.length]} 55%, black))` }}
+              style={{ transform: `translateX(${(k - i) * 86}%) scale(${k === i ? 1 : 0.86})`, zIndex: cards.length - Math.abs(k - i), background: `linear-gradient(160deg, ${TINTS[k % TINTS.length]}, color-mix(in srgb, ${TINTS[k % TINTS.length]} 55%, black))` }}
               aria-hidden={k !== i}
               aria-label={`${k + 1} / ${cards.length}`}
               onClick={() => k !== i && go(k)}

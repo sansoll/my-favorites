@@ -1,4 +1,4 @@
-.screen { display: flex; flex-direction: column; gap: 1.25rem; padding: 1.25rem 1.25rem 1.5rem; }
+.screen { display: flex; flex-direction: column; gap: 0.875rem; padding: 0.875rem 1.25rem 1rem; }
 .head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; min-height: var(--tap); }
 .title { margin: 0; font-size: 1.5rem; font-weight: 700; }
 .date { font-size: 0.875rem; color: var(--text-sub); margin-left: 0.5rem; font-weight: 400; }

@@ -4,7 +4,7 @@
 .summary { margin: 0; font-size: 1rem; }
 .list { list-style: none; margin: 0; padding: 0; }
 .item { border-bottom: 1px solid var(--line-soft); }
-.row { display: flex; align-items: center; gap: 0.5rem; width: 100%; min-height: 3.5rem; padding: 0; border: 0; background: none; text-align: left; }
+.row { display: flex; align-items: center; gap: 0.5rem; width: 100%; min-height: var(--row); padding: 0; border: 0; background: none; text-align: left; }
 .rank { flex: none; width: 1.5rem; font-weight: 700; color: var(--text-sub); }
 .name { flex: 1; min-width: 0; font-size: 1rem; font-weight: 500; overflow-wrap: anywhere; }
 .badge { flex: none; padding: 0.0625rem 0.4375rem; border-radius: 0.625rem; background: var(--soft); font-size: 0.6875rem; font-weight: 700; color: var(--text-sub); }
@@ -22,3 +22,9 @@
 .recAmt { font-weight: 500; }
 .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .action { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0 0.875rem; border: 0; border-radius: 1.25rem; background: var(--soft); color: var(--text); font-size: 0.8125rem; font-weight: 700; text-decoration: none; }
+.mapBox { position: relative; height: 15rem; margin: 0 -1.25rem; border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); background: #E8EEF2; }
+.map { position: absolute; inset: 0; z-index: 0; }
+.mapNote { position: absolute; left: 0.75rem; bottom: 0.5rem; z-index: 500; margin: 0; padding: 0.25rem 0.625rem; border-radius: 0.75rem; background: rgba(255, 255, 255, 0.92); color: #1B1B1F; font-size: 0.75rem; pointer-events: none; }
+.pinWrap { background: none; border: 0; }
+.pin { display: flex; align-items: center; justify-content: center; border: 2.5px solid #FFFFFF; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-weight: 700; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35); }
+.off { font-size: 0.75rem; color: var(--text-muted); }

@@ -1,11 +1,13 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { routes } from '../../app/App';
 import { ToastProvider } from '../../components/Toast';
 import type { FavoritesDB } from '../../data/db';
 import { addTarget, listCategories, listDetails } from '../../data/repo/lists';
-import { namePlace } from '../../data/repo/places';
+import { namePlace, searchPlace } from '../../data/repo/places';
+import { setPlaceServices } from '../../services/places';
+import { clearVisitCoords } from './useVisitCoords';
 import { createBasePresets, listPresets, markBasePresetsAsked } from '../../data/repo/presets';
 import { saveRecord } from '../../data/repo/records';
 import { today } from '../../domain/date';
@@ -69,5 +71,37 @@ describe('다녀온 곳 화면 (U6-4)', () => {
     expect(await screen.findByRole('button', { name: /올림픽 홀/ })).toBeInTheDocument();
     await userEvent.click(within(screen.getByRole('list', { name: '올림픽 홀 기록' })).getAllByRole('link')[0]);
     expect(router.state.location.pathname).toMatch(/^\/records\//);
+  });
+});
+
+describe('다녀온 곳 지도 (휴대폰 피드백)', () => {
+  afterEach(() => { setPlaceServices(null); clearVisitCoords(); });
+
+  it('좌표를 찾은 곳은 횟수가 적힌 핀으로, 이름만 남긴 곳은 지도 없음', async () => {
+    const asked: string[][] = [];
+    setPlaceServices({
+      domestic: { search: async () => [], locate: async (ps) => { asked.push(ps.map((p) => p.externalId)); return new Map([['K1', { lat: 37.52, lng: 127.12 }]]); } },
+      overseas: { search: async () => [], locate: async () => new Map([['W2', { lat: 35.7, lng: 139.75 }]]) },
+    });
+    const { a } = await seed();
+    const ev = (await listCategories(db, a.id)).find((c) => c.name === '행사')!;
+    const kspo = await searchPlace(db, { source: 'kakao', externalId: 'K1', name: 'KSPO DOME' });
+    const tokyo = await searchPlace(db, { source: 'osm', externalId: 'W2', name: 'Tokyo Dome' });
+    await saveRecord(db, { targetId: a.id, categoryId: ev.id, paid: 1000, placeId: kspo.id, date: `${today().slice(0, 4)}-01-02` });
+    await saveRecord(db, { targetId: a.id, categoryId: ev.id, paid: 1000, placeId: kspo.id, date: `${today().slice(0, 4)}-01-03` });
+    await saveRecord(db, { targetId: a.id, categoryId: ev.id, paid: 1000, placeId: tokyo.id });
+    renderApp('/stats/places');
+    expect(await screen.findByRole('region', { name: '다녀온 곳 지도' })).toBeInTheDocument();
+    expect(await screen.findByText('1곳은 지도에 없어요(이름만 남긴 곳 등)')).toBeInTheDocument();
+    const pin = await screen.findByTitle('KSPO DOME 2번');
+    expect(pin).toHaveTextContent('2');
+    expect(screen.getByTitle('Tokyo Dome 1번')).toBeInTheDocument();
+    expect(within(screen.getByRole('button', { name: /올림픽홀/ })).getByText('지도 없음')).toBeInTheDocument();
+    expect(asked).toEqual([['K1']]);
+    // 핀을 누르면 목록에서 그 장소가 펼쳐짐
+    fireEvent.click(pin);
+    expect(await screen.findByRole('list', { name: 'KSPO DOME 기록' })).toBeInTheDocument();
+    // 좌표는 저장하지 않음
+    expect(await db.places.get(kspo.id)).not.toHaveProperty('lat');
   });
 });

@@ -11,6 +11,7 @@ import { PlaceSheet } from '../../components/PlaceSheet';
 import { placeLabel } from '../../data/repo/places';
 import { DatePicker } from '../../components/DatePicker';
 import { Keypad } from '../../components/Keypad';
+import { MemoSheet } from '../../components/MemoSheet';
 import { Sheet } from '../../components/Sheet';
 import { useToast } from '../../components/Toast';
 import { formatDateLong, isScheduled, parseDateStr, today } from '../../domain/date';
@@ -114,15 +115,18 @@ export function AmountScreen() {
             <input className={s.inline} placeholder="선택 · 예: 응원봉" maxLength={40} value={etcText} onChange={(e) => setEtcText(e.target.value)} />
           </label>
         )}
-        <button type="button" className={s.row} aria-expanded={memoOpen} onClick={() => setMemoOpen(!memoOpen)}>
-          <span className={s.rowLabel}>{memo.trim() ? '메모' : '메모 추가'}</span>
-          <span className={s.rowValue} aria-hidden="true">{memoOpen ? '▴' : '▾'}</span>
+        <button type="button" className={s.row} aria-haspopup="dialog" onClick={() => setMemoOpen(true)}>
+          <span className={s.rowLabel}>메모</span>
+          <span className={`${s.rowValue} ${s.memoPreview}`}>
+            {memo ? memo : <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>추가</span>}
+            <span aria-hidden="true">›</span>
+          </span>
         </button>
-        {memoOpen && <textarea className={s.memo} aria-label="메모" maxLength={500} value={memo} onChange={(e) => setMemo(e.target.value)} />}
       </div>
       <div className={s.grow} />
       <Keypad value={amount} onChange={setAmount} />
       <button type="button" className={u.primary} disabled={!amount || saving} onClick={() => void save()}>저장</button>
+      <MemoSheet open={memoOpen} value={memo} onClose={() => setMemoOpen(false)} onSave={(m) => { setMemo(m); setMemoOpen(false); }} />
       <PlaceSheet open={placing} value={placeId} onClose={() => setPlacing(false)} onPick={(id) => { setPlaceId(id ?? undefined); setPlacing(false); }} />
       <Sheet open={picking} onClose={() => setPicking(false)} title="날짜">
         <DatePicker value={date} today={todayStr} onSelect={(d) => { setDate(d); setPicking(false); }} />
