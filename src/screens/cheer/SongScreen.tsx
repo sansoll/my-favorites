@@ -13,6 +13,7 @@ import {
 import { withEulReul } from '../../domain/name';
 import { safeUrl } from '../../domain/url';
 import { keepScreenOn } from '../../services/wakeLock';
+import { TargetBanner } from '../../components/TargetPhoto';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Sheet } from '../../components/Sheet';
 import { useToast } from '../../components/Toast';
@@ -34,10 +35,10 @@ export function SongScreen() {
   const target = useLiveQuery(async () => (song ? getDb().targets.get(song.targetId) : undefined), [song?.targetId]);
   if (song === undefined) return null;
   if (!song) return <div className={s.body}><p className={u.hint}>곡을 찾을 수 없어요.</p><Link to="/cheer">곡 목록으로</Link></div>;
-  return <SongView key={song.id} song={song} who={target?.name ?? ''} />;
+  return <SongView key={song.id} song={song} who={target?.name ?? ''} photoId={target?.photoId} />;
 }
 
-function SongView({ song, who }: { song: Song; who: string }) {
+function SongView({ song, who, photoId }: { song: Song; who: string; photoId?: string }) {
   const toast = useToast();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -138,6 +139,7 @@ function SongView({ song, who }: { song: Song; who: string }) {
   return (
     <div className={s.screen}>
       <div className={s.top}>
+        {!edit && <TargetBanner photoId={photoId} name={who} />}
         <div className={s.topRow}>
           <div className={s.heading}>
             <Link to="/cheer" className={s.back} aria-label="곡 목록으로">

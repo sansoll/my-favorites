@@ -2,6 +2,7 @@ import { createHashRouter, RouterProvider, type RouteObject } from 'react-router
 import { ToastProvider } from '../components/Toast';
 import { CheerScreen } from '../screens/cheer/CheerScreen';
 import { SongScreen } from '../screens/cheer/SongScreen';
+import { ThemeScreen } from '../screens/settings/ThemeScreen';
 import { HistoryScreen } from '../screens/history/HistoryScreen';
 import { RecordScreen } from '../screens/record/RecordScreen';
 import { SettingsScreen } from '../screens/settings/SettingsScreen';
@@ -34,6 +35,7 @@ export const routes: RouteObject[] = [
       { path: '/settings', element: <SettingsScreen /> },
       { path: '/settings/presets', element: <PresetsScreen /> },
       { path: '/settings/recurring', element: <RecurringScreen /> },
+      { path: '/settings/theme', element: <ThemeScreen /> },
       { path: '*', element: <RecordScreen /> },
     ],
   },

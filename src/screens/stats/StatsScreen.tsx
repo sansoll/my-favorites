@@ -6,6 +6,7 @@ import { today } from '../../domain/date';
 import { formatWon } from '../../domain/money';
 import { computeStats, isCurrentPeriod, periodLabel, shiftPeriod, type Period, type RankRow, type StatsMode } from '../../domain/stats';
 import { useLookups } from '../../hooks/useLookups';
+import { categoryColorMap } from '../../data/repo/theme';
 import s from './Stats.module.css';
 
 function Bars({ title, rows, color }: { title: string; rows: RankRow[]; color?: string }) {
@@ -33,6 +34,7 @@ export function StatsScreen() {
   const [ty, tm] = todayStr.split('-').map(Number);
   const [p, setP] = useState<Period>({ mode: 'month', y: ty, m: tm });
   const records = useLiveQuery(() => getDb().records.toArray(), []);
+  const catColors = useLiveQuery(() => categoryColorMap(getDb()), []);
   const l = useLookups();
   if (!records || !l) return null;
   const st = computeStats(records, l, p);
@@ -80,7 +82,7 @@ export function StatsScreen() {
               <div className={s.top}><span className={s.topLabel}>1위 분류</span><span className={s.topValue}>{st.categories[0]?.name ?? '없음'}</span></div>
             </div>
             <Bars title="대상 랭킹" rows={st.targets} />
-            <Bars title="분류 랭킹" rows={st.categories} />
+            <Bars title="분류 랭킹" rows={st.categories.map((r) => ({ ...r, color: catColors?.get(r.key) }))} color="var(--accent2)" />
             <section className={s.section} aria-label="세부 랭킹">
               <h2 className={s.h2}>세부 랭킹</h2>
               <ol className={s.list}>

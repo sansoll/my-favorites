@@ -1,3 +1,4 @@
+import { TargetIcon } from '../../components/TargetPhoto';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -76,7 +77,7 @@ export function HistoryScreen() {
                   <>
                     {selecting && <span className={`${s.check} ${on ? s.checkOn : ''}`} aria-hidden="true">{on ? '✓' : ''}</span>}
                     <span className={s.main}>
-                      <span className={s.target}><span className={s.dot} style={{ background: t?.color }} aria-hidden="true" />{t?.name}{isScheduled(r.date, todayStr) && <span className={s.badge}>예정</span>}</span>
+                      <span className={s.target}><TargetIcon photoId={t?.photoId} color={t?.color} className={s.dot} />{t?.name}{isScheduled(r.date, todayStr) && <span className={s.badge}>예정</span>}</span>
                       <span className={s.path}>{recordPath(lk, r)}</span>
                     </span>
                     <span className={s.right}>
