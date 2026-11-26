@@ -5,3 +5,12 @@
   border-bottom: 1px solid var(--line-soft); font-size: 1rem; color: var(--text); text-decoration: none;
 }
 .meta { font-size: 0.875rem; color: var(--text-sub); text-align: right; overflow-wrap: anywhere; }
+button.row { width: 100%; background: none; border: 0; border-bottom: 1px solid var(--line-soft); padding: 0; font: inherit; text-align: left; cursor: pointer; }
+.danger { color: var(--danger, #D93A3A); }
+.off { opacity: 0.45; cursor: default; }
+.text { margin: 0 0 0.75rem; font-size: 0.9375rem; line-height: 1.55; color: var(--text); }
+.small { margin: 0 0 0.5rem; font-size: 0.8125rem; line-height: 1.5; color: var(--text-sub); }
+.info { display: grid; grid-template-columns: auto 1fr; gap: 0.375rem 1rem; margin: 0 0 1rem; font-size: 0.9375rem; }
+.info dt { color: var(--text-sub); }
+.info dd { margin: 0; }
+.hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
