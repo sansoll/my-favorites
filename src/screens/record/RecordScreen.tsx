@@ -5,6 +5,8 @@ import { getDb } from '../../data/db';
 import { listTargets } from '../../data/repo/lists';
 import { recentRecords } from '../../data/repo/records';
 import { upcomingPayments } from '../../data/repo/recurring';
+import { checkedOn, listCheckItems, toggleCheck } from '../../data/repo/checks';
+import { useToast } from '../../components/Toast';
 import { bannerText } from '../../domain/recurring';
 import { EditableList } from '../../components/EditableList';
 import { formatMonthDay, today } from '../../domain/date';
@@ -36,6 +38,18 @@ export function RecordScreen() {
     const db = getDb();
     return upcomingPayments(db, todayStr);
   }, [todayStr]);
+  const toast = useToast();
+  const checks = useLiveQuery(async () => {
+    const db = getDb();
+    const items = await listCheckItems(db, true);
+    const [done, ts] = await Promise.all([checkedOn(db, items.map((x) => x.id), todayStr), db.targets.toArray()]);
+    const tm = new Map(ts.map((t) => [t.id, t]));
+    return items.map((x) => ({ id: x.id, label: `${tm.get(x.targetId)?.name ?? ''} · ${x.name}`, color: x.color ?? tm.get(x.targetId)?.color ?? 'var(--accent)', done: done.has(x.id) }));
+  }, [todayStr]);
+  const checkToday = async (c: { id: string; label: string }) => {
+    const on = await toggleCheck(getDb(), c.id, todayStr, todayStr);
+    toast(on ? `${c.label} 오늘 체크했어요 ✓` : `${c.label} 오늘 체크를 지웠어요`);
+  };
   const [editing, setEditing] = useState(false);
   const [adding, setAdding] = useState(false);
   const { onReorder, onAction, sheet } = useListActions('target');
@@ -60,6 +74,25 @@ export function RecordScreen() {
         <span className={s.cardLabel}>이번 달 지출</span>
         <span className={s.cardValue}>{formatWon(totals.total)}</span>
       </Link>
+      {!editing && checks && (
+        <section className={s.section}>
+          <div className={s.sectionHead}>
+            <h2 className={s.sectionTitle}>오늘 체크</h2>
+            <Link to="/check" className={s.more}>{checks.length ? '달력' : '체크 항목 만들기'}</Link>
+          </div>
+          {checks.length > 0 && (
+            <div className={s.checkChips}>
+              {checks.map((c) => (
+                <button key={c.id} type="button" className={s.checkChip} aria-pressed={c.done} onClick={() => void checkToday(c)}
+                  style={c.done ? { borderColor: c.color, background: `color-mix(in srgb, ${c.color} 14%, var(--bg))` } : undefined}>
+                  <span className={s.checkDot} style={{ background: c.color }} aria-hidden="true" />
+                  {c.label}{c.done && <span aria-hidden="true"> ✓</span>}
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
       <section className={s.section}>
         <h2 className={s.sectionTitle}>누구에게 썼나요?</h2>
         {targets && (

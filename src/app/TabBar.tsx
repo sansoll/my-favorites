@@ -16,7 +16,7 @@ export const TABS = [
 export function TabBar() {
   const { pathname } = useLocation();
   // 분류·세부·금액 화면도 기록 탭에 속합니다.
-  const inRecord = pathname === '/' || pathname.startsWith('/record');
+  const inRecord = pathname === '/' || pathname.startsWith('/record/') || pathname === '/check';
   return (
     <nav aria-label="하단 탭" className={s.bar}>
       {TABS.map((t) => {
