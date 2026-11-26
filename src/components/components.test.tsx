@@ -186,7 +186,8 @@ describe('편집 목록 (U0-10)', () => {
 
     await userEvent.click(screen.getByRole('button', { name: '기타 메뉴' }));
     expect(screen.queryByRole('button', { name: '기타 삭제' })).not.toBeInTheDocument();
-    expect(screen.getByText('기타는 항상 있어야 해서 삭제할 수 없어요.')).toBeInTheDocument();
+    expect(screen.getByText('기타는 항상 있어야 해서 이름을 바꾸거나 삭제할 수 없어요.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '이름 바꾸기' })).not.toBeInTheDocument();
   });
 });
 

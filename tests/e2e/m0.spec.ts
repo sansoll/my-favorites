@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { closePresetDialog } from './helpers';
 
 test('하단 탭으로 화면 이동 (U0-12)', async ({ page }) => {
   await page.goto('./');
+  await closePresetDialog(page);
   await expect(page.getByRole('heading', { level: 1, name: '기록' })).toBeVisible();
   for (const name of ['내역', '통계', '응원법', '설정']) {
     await page.getByRole('navigation', { name: '하단 탭' }).getByRole('link', { name }).click();

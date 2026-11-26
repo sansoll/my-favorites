@@ -25,6 +25,8 @@ export interface EditableListProps {
   /** ⋮ 메뉴 위쪽에 보일 설명(예: 이번 달 금액·기록 건수) */
   menuMeta?: (item: EditableItem) => ReactNode;
   clearDataLabel?: string;
+  /** ⋮ 메뉴에 보일 동작. 기본은 모두 */
+  actions?: ItemAction[];
   label: string;
 }
 
@@ -43,7 +45,7 @@ export function moveItem<T>(arr: T[], from: number, to: number): T[] {
  * 편집 모드가 있는 목록. `편집` 또는 길게 누르기로 들어가고,
  * `≡`를 끌어 순서를 바꾸고, `⋮`로 이름 바꾸기·데이터만 삭제·삭제를 고릅니다. `기타`에는 삭제가 없습니다.
  */
-export function EditableList({ items, editing, onEditingChange, onOpen, onReorder, onAction, menuMeta, clearDataLabel = '데이터만 삭제', label }: EditableListProps) {
+export function EditableList({ items, editing, onEditingChange, onOpen, onReorder, onAction, menuMeta, clearDataLabel = '데이터만 삭제', actions = ['rename', 'clearData', 'delete'], label }: EditableListProps) {
   const [drag, setDrag] = useState<{ id: string; startY: number; dy: number; rowH: number } | null>(null);
   const [menu, setMenu] = useState<EditableItem | null>(null);
   const press = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -137,11 +139,15 @@ export function EditableList({ items, editing, onEditingChange, onOpen, onReorde
         {menu && (
           <div className={s.menu}>
             {menuMeta && <p className={s.meta}>{menuMeta(menu)}</p>}
-            <button type="button" className={s.menuItem} onClick={() => { const m = menu; setMenu(null); onAction(m, 'rename'); }}>이름 바꾸기</button>
-            <button type="button" className={s.menuItem} onClick={() => { const m = menu; setMenu(null); onAction(m, 'clearData'); }}>{clearDataLabel}</button>
+            {actions.includes('rename') && !menu.isEtc && (
+              <button type="button" className={s.menuItem} onClick={() => { const m = menu; setMenu(null); onAction(m, 'rename'); }}>이름 바꾸기</button>
+            )}
+            {actions.includes('clearData') && (
+              <button type="button" className={s.menuItem} onClick={() => { const m = menu; setMenu(null); onAction(m, 'clearData'); }}>{clearDataLabel}</button>
+            )}
             {menu.isEtc ? (
-              <p className={s.note}>기타는 항상 있어야 해서 삭제할 수 없어요.</p>
-            ) : (
+              <p className={s.note}>기타는 항상 있어야 해서 이름을 바꾸거나 삭제할 수 없어요.</p>
+            ) : actions.includes('delete') && (
               <button type="button" className={`${s.menuItem} ${s.menuDanger}`} onClick={() => { const m = menu; setMenu(null); onAction(m, 'delete'); }}>{menu.name} 삭제</button>
             )}
           </div>
