@@ -30,10 +30,10 @@ describe('튜토리얼 (U10-4)', () => {
     const router = renderApp();
     await waitFor(() => expect(router.state.location.pathname).toBe('/tutorial'));
     expect(STEPS).toHaveLength(13);
-    expect(screen.queryByRole('navigation', { name: '하단 탭' })).not.toBeInTheDocument();
+    expect(await screen.findByText('1 / 13')).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole('navigation', { name: '하단 탭' })).not.toBeInTheDocument());
     const before = await counts();
 
-    expect(await screen.findByText('1 / 13')).toBeInTheDocument();
     await userEvent.click(within(screen.getByRole('region', { name: '예시 화면: 대상 추가' })).getByRole('button', { name: '+ 대상 추가' }));
     expect(screen.getByText('2 / 13')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: '이전' }));
