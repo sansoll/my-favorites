@@ -34,18 +34,18 @@ describe('테마 화면 (U9-4)', () => {
     const router = renderApp('/settings');
     await userEvent.click(await screen.findByRole('link', { name: /테마와 꾸미기.*라이트/ }));
     expect(router.state.location.pathname).toBe('/settings/theme');
-    await userEvent.click(await screen.findByRole('radio', { name: /흑백/ }));
-    await waitFor(() => expect(cssVar('--accent')).toBe('#1B1B1F'));
+    await userEvent.click(await screen.findByRole('radio', { name: /다크 모드/ }));
+    await waitFor(() => expect(cssVar('--accent')).toBe('#9187FF'));
     expect((await activeTheme(db)).id).toBe('light');
-    await userEvent.click(screen.getByRole('button', { name: '‘흑백’ 테마로 적용' }));
-    await waitFor(async () => expect((await activeTheme(db)).id).toBe('mono'));
+    await userEvent.click(screen.getByRole('button', { name: '‘다크 모드’ 테마로 적용' }));
+    await waitFor(async () => expect((await activeTheme(db)).id).toBe('dark'));
     expect(await screen.findByRole('button', { name: '지금 쓰는 테마예요' })).toBeDisabled();
   });
 
   it('미리 보기만 하고 나가면 쓰던 테마로 되돌림', async () => {
     const router = renderApp('/settings/theme');
-    await userEvent.click(await screen.findByRole('radio', { name: /흑백/ }));
-    await waitFor(() => expect(cssVar('--accent')).toBe('#1B1B1F'));
+    await userEvent.click(await screen.findByRole('radio', { name: /다크 모드/ }));
+    await waitFor(() => expect(cssVar('--accent')).toBe('#9187FF'));
     await router.navigate('/settings');
     await waitFor(() => expect(cssVar('--accent')).toBe('#5B4CDB'));
   });

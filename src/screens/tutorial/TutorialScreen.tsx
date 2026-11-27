@@ -72,8 +72,8 @@ export const STEPS: Step[] = [
     screen: (n) => <><h2 className={s.h}>곡 1</h2><Hl onNext={n} className={s.seg}><span className={s.segOn}>응원법</span><span>원본</span><span>외우기</span></Hl><p className={s.lyric}>둘째 줄 <mark style={{ background: '#FFE08A' }}>다 같이 부르는 부분</mark></p><p className={s.lyric}><mark style={{ background: '#FFD3DE' }}>「 하나 둘 셋 」</mark></p></>,
   },
   {
-    title: '테마 꾸미기', body: '설정의 테마에서 라이트와 흑백 중에 고르거나 사진으로 테마를 만들어요. 글자색과 글꼴도 바꾸고, 대상마다 사진을 넣을 수 있어요.',
-    screen: (n) => <><h2 className={s.h}>테마와 꾸미기</h2><div className={s.cards}><Hl onNext={n} className={s.card}>라이트</Hl><span className={s.card}>흑백</span><span className={s.card}>+ 사진으로</span></div></>,
+    title: '테마 꾸미기', body: '설정의 테마에서 라이트·다크 모드 중에 고르거나 사진으로 테마를 만들어요. 글자색과 글꼴도 바꾸고, 대상마다 사진을 넣을 수 있어요.',
+    screen: (n) => <><h2 className={s.h}>테마와 꾸미기</h2><div className={s.cards}><Hl onNext={n} className={s.card}>라이트 모드</Hl><span className={s.card}>다크 모드</span><span className={s.card}>+ 사진으로</span></div></>,
   },
   {
     title: '이제 시작해 볼까요?', body: '준비는 끝났어요! 예시는 모두 지웠어요. 좋아하는 대상을 하나 추가하면서 나만의 기록을 시작해 보세요.',

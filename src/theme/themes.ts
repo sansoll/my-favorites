@@ -1,4 +1,4 @@
-/** 테마는 배경·카드·강조·보조 강조·글자 다섯 가지 색입니다. 라이트·흑백은 코드에 내장합니다. */
+/** 테마는 배경·카드·강조·보조 강조·글자 다섯 가지 색입니다. 라이트·다크 모드는 코드에 내장합니다. */
 export interface ThemeColors {
   bg: string;
   surface: string;
@@ -15,15 +15,18 @@ export const LIGHT: ThemeColors = {
   text: '#1B1B1F',
 };
 
-export const MONO: ThemeColors = {
-  bg: '#FFFFFF',
-  surface: '#F2F2F2',
-  accent: '#1B1B1F',
-  accent2: '#5F6068',
-  text: '#1B1B1F',
+export const DARK: ThemeColors = {
+  bg: '#121216',
+  surface: '#1E1E24',
+  accent: '#9187FF',
+  accent2: '#FF7AA8',
+  text: '#ECECF1',
 };
 
-export const BUILTIN_THEMES = { light: LIGHT, mono: MONO } as const;
+export const BUILTIN_THEMES = { light: LIGHT, dark: DARK } as const;
+
+/** 예전 `흑백` 테마(mono)를 쓰던 사람은 다크 모드로 옮깁니다. */
+export const LEGACY_THEME_IDS: Record<string, keyof typeof BUILTIN_THEMES> = { mono: 'dark' };
 
 export const DEFAULT_FONT = "'Noto Sans KR', 'Noto Sans CJK KR', system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif";
 
@@ -36,6 +39,9 @@ export function applyTheme(t: ThemeColors & { onAccent?: string; dark?: boolean 
   root.style.setProperty('--text', t.text);
   if (t.onAccent) root.style.setProperty('--on-accent', t.onAccent);
   root.style.setProperty('color-scheme', t.dark ? 'dark' : 'light');
+  // 어두운 배경에서는 경고색·알림 바탕을 조금 밝게
+  root.style.setProperty('--danger', t.dark ? '#E5534B' : '#C0392B');
+  root.style.setProperty('--toast-bg', t.dark ? '#3A3A44' : '#26262C');
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t.bg);
 }
 
