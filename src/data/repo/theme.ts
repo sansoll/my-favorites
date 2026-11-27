@@ -1,18 +1,18 @@
 import { newId, type FavoritesDB } from '../db';
 import { getSetting, setSetting } from '../settings';
 import type { Blob_, Theme } from '../types';
-import { BUILTIN_THEMES } from '../../theme/themes';
+import { BUILTIN_THEMES, LEGACY_THEME_IDS } from '../../theme/themes';
 import { isHex } from '../../theme/color';
 import { nameKey } from '../../domain/name';
 
-/** 테마·글꼴·꾸미기 저장(U9-4~6). 라이트·흑백은 코드에 내장하고, 사진 테마만 `themes`에 저장합니다. */
+/** 테마·글꼴·꾸미기 저장(U9-4~6). 라이트·다크 모드는 코드에 내장하고, 사진 테마만 `themes`에 저장합니다. */
 
 export const THEME_KEY = 'theme';
 export const BUILTIN_TEXT_KEY = 'builtinThemeText';
 export const FONT_KEY = 'font';
 
 export type BuiltinId = keyof typeof BUILTIN_THEMES;
-const BUILTIN_NAMES: Record<BuiltinId, string> = { light: '라이트', mono: '흑백' };
+const BUILTIN_NAMES: Record<BuiltinId, string> = { light: '라이트 모드', dark: '다크 모드' };
 
 export interface ThemeEntry extends Theme { builtin: boolean }
 
@@ -25,8 +25,15 @@ export async function listThemes(db: FavoritesDB): Promise<ThemeEntry[]> {
   return [...builtins, ...saved.map((t) => ({ ...t, builtin: false }))];
 }
 
+function systemPrefersDark(): boolean {
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
 export async function activeThemeId(db: FavoritesDB): Promise<string> {
-  return getSetting<string>(db, THEME_KEY, 'light');
+  const id = await getSetting<string | null>(db, THEME_KEY, null);
+  // 아직 고른 적이 없으면 폰의 다크 모드 설정을 따릅니다.
+  if (!id) return systemPrefersDark() ? 'dark' : 'light';
+  return LEGACY_THEME_IDS[id] ?? id;
 }
 
 /** 지금 쓰는 테마. 지운 테마를 가리키면 라이트. */

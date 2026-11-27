@@ -17,11 +17,14 @@ const fontFile = (name: string, head: number[], size = 100) => {
 };
 
 describe('테마 저장·적용 (U9-4)', () => {
-  it('기본은 라이트, 흑백 적용, 사진 테마는 `사진 테마 n`으로 저장하고 바로 적용', async () => {
+  it('기본은 라이트 모드, 다크 모드 적용, 사진 테마는 `사진 테마 n`으로 저장하고 바로 적용', async () => {
     expect((await activeTheme(db)).id).toBe('light');
-    expect((await listThemes(db)).map((t) => t.name)).toEqual(['라이트', '흑백']);
+    expect((await listThemes(db)).map((t) => t.name)).toEqual(['라이트 모드', '다크 모드']);
+    await applyThemeById(db, 'dark');
+    expect((await activeTheme(db)).name).toBe('다크 모드');
+    // 예전 흑백(mono)을 쓰던 사람은 다크 모드로
     await applyThemeById(db, 'mono');
-    expect((await activeTheme(db)).name).toBe('흑백');
+    expect((await activeTheme(db)).id).toBe('dark');
     const t1 = await savePhotoTheme(db, draft);
     const t2 = await savePhotoTheme(db, draft);
     expect([t1.name, t2.name]).toEqual(['사진 테마 1', '사진 테마 2']);
@@ -44,7 +47,7 @@ describe('테마 저장·적용 (U9-4)', () => {
     const list = await listThemes(db);
     expect(list.find((x) => x.id === 'light')?.text).toBe('#333333');
     expect(list.find((x) => x.id === t.id)?.text).toBe('#111111');
-    await expect(setThemeText(db, 'mono', 'javascript:')).rejects.toThrow();
+    await expect(setThemeText(db, 'dark', 'javascript:')).rejects.toThrow();
   });
 });
 
@@ -91,5 +94,19 @@ describe('대상 꾸미기, 분류 색 (U9-6)', () => {
   it('같은 이름(공백 무시) 분류는 같은 색', async () => {
     await setCategoryColor(db, ' 행 사', '#7A5FD0');
     expect((await categoryColorMap(db)).get('행사')).toBe('#7A5FD0');
+  });
+});
+
+describe('다크 모드 기본값 (피드백)', () => {
+  afterEach(() => vi.unstubAllGlobals());
+  it('아직 고른 테마가 없으면 폰 설정을 따라 다크·라이트, 고르면 그대로', async () => {
+    const { freshDb } = await import('../../test/db');
+    const d = freshDb();
+    vi.stubGlobal('matchMedia', (q: string) => ({ matches: q.includes('dark'), media: q, addEventListener() {}, removeEventListener() {} }));
+    expect((await activeTheme(d)).id).toBe('dark');
+    vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener() {}, removeEventListener() {} }));
+    expect((await activeTheme(d)).id).toBe('light');
+    await applyThemeById(d, 'dark');
+    expect((await activeTheme(d)).id).toBe('dark');
   });
 });
