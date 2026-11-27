@@ -64,7 +64,7 @@ export function VisitedScreen() {
   const offMap = visits.length - points.length;
   const selectFromMap = (id: string) => {
     setOpen(id);
-    requestAnimationFrame(() => document.getElementById(`visit-${id}`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+    requestAnimationFrame(() => document.getElementById(`visit-${id}`)?.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' }));
   };
 
   return (

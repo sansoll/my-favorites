@@ -8,7 +8,7 @@ import {
   addExtra, addLink, deleteSong, paintWord, recordOpen, removeExtra, removeLink, resetLayer, SongError, updateExtra, updateLyrics,
 } from '../../data/repo/songs';
 import {
-  allCoverKeys, CHEER_COLORS, extraKey, extrasAt, extraShow, markKey, markShow, splitLyrics, stageColor, VIEW_LABELS, type ViewMode,
+  allCoverKeys, CHEER_COLOR_KEY, DEFAULT_CHEER_COLOR, extraKey, extrasAt, extraShow, markKey, markShow, splitLyrics, stageColor, VIEW_LABELS, type ViewMode,
 } from '../../domain/cheer';
 import { withEulReul } from '../../domain/name';
 import { safeUrl } from '../../domain/url';
@@ -46,7 +46,7 @@ function SongView({ song, who, photoId }: { song: Song; who: string; photoId?: s
   const [opened, setOpened] = useState<Set<string>>(new Set());
   const [edit, setEdit] = useState(params.get('edit') === '1');
   const [tool, setTool] = useState<'paint' | 'insert'>('paint');
-  const [color, setColor] = useState<string>(CHEER_COLORS[0].color);
+  const color = useLiveQuery(() => getSetting<string>(getDb(), CHEER_COLOR_KEY, DEFAULT_CHEER_COLOR), []) ?? DEFAULT_CHEER_COLOR;
   const [extraT, setExtraT] = useState<ExtraTarget | null>(null);
   const [draft, setDraft] = useState('');
   const [lyricOpen, setLyricOpen] = useState(false);
@@ -70,11 +70,11 @@ function SongView({ song, who, photoId }: { song: Song; who: string; photoId?: s
   const lines = splitLyrics(song.lyrics);
   const layer = song.layer;
   const markAt = (line: number, word: number) => layer.marks.find((m) => m.line === line && m.word === word);
-  const paintColor = color === 'erase' ? CHEER_COLORS[1].color : color;
 
   const tapWord = (line: number, word: number, text: string) => {
     if (tool === 'paint') {
-      void paintWord(getDb(), song.id, line, word, color === 'erase' ? null : color);
+      // 칠한 단어를 다시 누르면 지움(예전 색이어도), 안 칠한 단어는 설정한 색으로
+      void paintWord(getDb(), song.id, line, word, markAt(line, word) ? null : color);
       setChanged((c) => { if (!c.has(line)) return c; const n = new Set(c); n.delete(line); return n; });
     } else {
       setDraft('');
@@ -111,7 +111,7 @@ function SongView({ song, who, photoId }: { song: Song; who: string; photoId?: s
   const saveExtra = async () => {
     if (!extraT || !draft.trim()) return;
     if (extraT.kind === 'new') {
-      await addExtra(getDb(), song.id, { line: extraT.line, word: extraT.word, position: extraT.pos, text: draft, color: paintColor });
+      await addExtra(getDb(), song.id, { line: extraT.line, word: extraT.word, position: extraT.pos, text: draft, color });
       toast(extraT.pos === 'below' ? '줄 아래에 추가 응원을 넣었어요' : `${extraT.text} ${extraT.pos === 'before' ? '앞에' : '뒤에'} 추가 응원을 넣었어요`);
     } else {
       await updateExtra(getDb(), song.id, extraT.extra.id, draft);
@@ -170,21 +170,10 @@ function SongView({ song, who, photoId }: { song: Song; who: string; photoId?: s
           <>
             <div className={s.seg} role="radiogroup" aria-label="편집 도구">
               <button type="button" role="radio" aria-checked={tool === 'paint'} className={`${s.segBtn} ${tool === 'paint' ? s.segOn : ''}`} onClick={() => setTool('paint')}>떼창 색칠</button>
-              <button type="button" role="radio" aria-checked={tool === 'insert'} className={`${s.segBtn} ${tool === 'insert' ? s.segOn : ''}`} onClick={() => { setTool('insert'); if (color === 'erase') setColor(CHEER_COLORS[1].color); }}>추가 응원 넣기</button>
-            </div>
-            <div className={s.swatches} role="radiogroup" aria-label="색">
-              <span aria-hidden="true">색</span>
-              {CHEER_COLORS.map((c) => (
-                <button key={c.key} type="button" role="radio" aria-checked={color === c.color} aria-label={`${c.name} 색`} className={`${s.swatch} ${color === c.color ? s.swatchOn : ''}`} style={{ background: c.color }} onClick={() => setColor(c.color)} />
-              ))}
-              {tool === 'paint' && (
-                <button type="button" role="radio" aria-checked={color === 'erase'} aria-label="지우개" className={`${s.swatch} ${color === 'erase' ? s.swatchOn : ''}`} style={{ background: 'var(--bg)', borderColor: color === 'erase' ? undefined : 'var(--line)' }} onClick={() => setColor('erase')}>지움</button>
-              )}
+              <button type="button" role="radio" aria-checked={tool === 'insert'} className={`${s.segBtn} ${tool === 'insert' ? s.segOn : ''}`} onClick={() => setTool('insert')}>추가 응원 넣기</button>
             </div>
             <p className={s.editHint}>
-              {tool === 'paint'
-                ? color === 'erase' ? '지울 단어를 누르세요.' : '함께 부를 단어를 누르면 색이 칠해져요. 다시 누르면 지워져요.'
-                : '구호를 넣을 단어를 누르세요. 그 단어 앞이나 뒤, 또는 줄 아래에 넣을 수 있어요. 넣은 구호를 누르면 고치거나 지울 수 있어요.'}
+              {tool === 'paint' ? '단어를 누르면 칠하고, 다시 누르면 지워요.' : '구호를 넣을 단어를 누르세요. 넣은 구호를 누르면 고쳐요.'}
             </p>
           </>
         )}

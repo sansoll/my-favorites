@@ -89,18 +89,17 @@ describe('보기 세 가지 (U8-2)', () => {
 });
 
 describe('응원법 편집 (U8-4)', () => {
-  it('떼창 색칠·지우개, 추가 응원은 넣기 전 미리보기, 넣은 응원 고치기·지우기', async () => {
+  it('떼창 색칠(다시 누르면 지움, 색 고르기 없음), 추가 응원은 넣기 전 미리보기, 넣은 응원 고치기·지우기', async () => {
     const s = await addSong(db, { targetId: tid, title: '곡 2', lyrics: '하나 둘 셋' });
     renderApp(`/cheer/${s.id}?edit=1`);
     const lyrics = await screen.findByLabelText('가사');
     await userEvent.click(within(lyrics).getByRole('button', { name: '둘' }));
     await waitFor(async () => expect((await db.songs.get(s.id))?.layer.marks).toEqual([{ line: 0, word: 1, color: Y }]));
-    await userEvent.click(screen.getByRole('radio', { name: '지우개' }));
+    expect(screen.queryByRole('radiogroup', { name: '색' })).not.toBeInTheDocument();
     await userEvent.click(within(lyrics).getByRole('button', { name: '둘' }));
     await waitFor(async () => expect((await db.songs.get(s.id))?.layer.marks).toEqual([]));
 
     await userEvent.click(screen.getByRole('radio', { name: '추가 응원 넣기' }));
-    expect(screen.queryByRole('radio', { name: '지우개' })).not.toBeInTheDocument();
     await userEvent.click(within(lyrics).getByRole('button', { name: '둘' }));
     const dlg = screen.getByRole('dialog', { name: '추가 응원 넣기' });
     await userEvent.type(within(dlg).getByRole('textbox', { name: '구호' }), '어이');
@@ -203,4 +202,21 @@ it('곡을 열면 펼친 횟수, 30분 안 다시 열면 안 셈 (U8-7)', async 
   await screen.findByLabelText('가사');
   await new Promise((r) => setTimeout(r, 50));
   expect(await db.songOpens.count()).toBe(1);
+});
+
+describe('응원법 칠하는 색은 설정에서 (피드백)', () => {
+  it('설정에서 분홍으로 바꾸면 편집에서 분홍으로 칠하고, 예전 색 단어도 한 번 누르면 지워짐', async () => {
+    const s = await addSong(db, { targetId: tid, title: '곡 3', lyrics: '하나 둘 셋' });
+    await db.songs.update(s.id, { layer: { marks: [{ line: 0, word: 0, color: Y }], extras: [] } });
+    const router = renderApp('/settings');
+    const group = await screen.findByRole('radiogroup', { name: '응원법 칠하는 색' });
+    expect(within(group).getByRole('radio', { name: '노랑' })).toHaveAttribute('aria-checked', 'true');
+    await userEvent.click(within(group).getByRole('radio', { name: '분홍' }));
+    await waitFor(() => expect(within(group).getByRole('radio', { name: '분홍' })).toHaveAttribute('aria-checked', 'true'));
+    await router.navigate(`/cheer/${s.id}?edit=1`);
+    const lyrics = await screen.findByLabelText('가사');
+    await userEvent.click(within(lyrics).getByRole('button', { name: '하나' }));
+    await userEvent.click(within(lyrics).getByRole('button', { name: '셋' }));
+    await waitFor(async () => expect((await db.songs.get(s.id))?.layer.marks).toEqual([{ line: 0, word: 2, color: '#FFD3DE' }]));
+  });
 });
