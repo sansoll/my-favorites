@@ -94,18 +94,20 @@ function SongView({ song, who, photoId }: { song: Song; who: string; photoId?: s
     return <span key={x.id} className={s.extra} style={{ background: x.color }}>{block ? `「 ${x.text} 」` : label}</span>;
   };
 
+  /** 칠한 단어는 배경이 밝은 색이라 다크 모드에서도 글자를 어둡게 둡니다. */
+  const painted = (bg: string) => ({ background: bg, color: '#1B1B1F' });
   const renderWord = (line: number, wi: number, w: string): ReactNode => {
     const mk = markAt(line, wi);
     if (edit) {
-      return <button key={`w${wi}`} type="button" className={`${s.word} ${s.editable}`} style={mk ? { background: mk.color } : undefined} aria-pressed={!!mk} onClick={() => tapWord(line, wi, w)}>{w}</button>;
+      return <button key={`w${wi}`} type="button" className={`${s.word} ${s.editable}`} style={mk ? painted(mk.color) : undefined} aria-pressed={!!mk} onClick={() => tapWord(line, wi, w)}>{w}</button>;
     }
     if (!mk) return <span key={`w${wi}`} className={s.word}>{w}</span>;
     const key = markKey(line, wi);
     const show = markShow(mode, opened.has(key));
     if (show === 'plain') return <span key={`w${wi}`} className={s.word}>{w}</span>;
     if (show === 'covered') return <button key={`w${wi}`} type="button" className={`${s.word} ${s.covered}`} aria-label="가린 단어 열기" onClick={() => flip(key)}>{w}</button>;
-    if (mode === 'memo') return <button key={`w${wi}`} type="button" className={s.word} style={{ background: mk.color }} onClick={() => flip(key)}>{w}</button>;
-    return <mark key={`w${wi}`} className={s.word} style={{ background: mk.color }}>{w}</mark>;
+    if (mode === 'memo') return <button key={`w${wi}`} type="button" className={s.word} style={painted(mk.color)} onClick={() => flip(key)}>{w}</button>;
+    return <mark key={`w${wi}`} className={s.word} style={painted(mk.color)}>{w}</mark>;
   };
 
   const saveExtra = async () => {

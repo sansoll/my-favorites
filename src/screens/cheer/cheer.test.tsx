@@ -66,6 +66,8 @@ describe('보기 세 가지 (U8-2)', () => {
     renderApp(`/cheer/${s.id}`);
     const lyrics = await screen.findByLabelText('가사');
     expect(within(lyrics).getByText('다').tagName).toBe('MARK');
+    // 칠한 단어는 다크 모드에서도 어두운 글자(밝은 배경 위 흰 글자 방지)
+    expect(within(lyrics).getByText('다')).toHaveStyle({ color: '#1B1B1F' });
     expect(within(lyrics).getByText('「어이」')).toBeInTheDocument();
     expect(within(lyrics).getByText('「 하나 둘 셋 」')).toBeInTheDocument();
 
