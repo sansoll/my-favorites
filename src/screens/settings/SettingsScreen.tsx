@@ -7,6 +7,8 @@ import { listRecurrings } from '../../data/repo/recurring';
 import { BackupError, exportFileName, exportText, importData, lastExportAt, readBackupFile, wipeAll, type BackupFile } from '../../data/backup';
 import { saveTextFile } from '../../services/file';
 import { activeTheme } from '../../data/repo/theme';
+import { getSetting, setSetting } from '../../data/settings';
+import { CHEER_COLOR_KEY, CHEER_COLORS, DEFAULT_CHEER_COLOR } from '../../domain/cheer';
 import { Screen } from '../../components/Screen';
 import { Sheet } from '../../components/Sheet';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
@@ -27,6 +29,7 @@ export function SettingsScreen() {
   const recurrings = useLiveQuery(() => listRecurrings(getDb()), []) ?? [];
   const lastExport = useLiveQuery(() => lastExportAt(getDb()), []);
   const themeName = useLiveQuery(async () => (await activeTheme(getDb())).name, []) ?? '';
+  const cheerColor = useLiveQuery(() => getSetting<string>(getDb(), CHEER_COLOR_KEY, DEFAULT_CHEER_COLOR), []) ?? DEFAULT_CHEER_COLOR;
   const fileRef = useRef<HTMLInputElement>(null);
   const [sheet, setSheet] = useState<'export' | 'info' | null>(null);
   const [pending, setPending] = useState<BackupFile | null>(null);
@@ -79,6 +82,18 @@ export function SettingsScreen() {
         <Link to="/settings/theme" className={s.row}><span>테마와 꾸미기</span><span className={s.meta}>{themeName} ›</span></Link>
         <Link to="/settings/recurring" className={s.row}><span>정기 결제</span><span className={s.meta}>{recurrings.length ? `${recurrings.filter((x) => x.enabled).length}개 켜짐` : '없음'} ›</span></Link>
         <Link to="/tutorial" className={s.row}><span>튜토리얼 다시 보기</span><span className={s.meta}>›</span></Link>
+      </section>
+
+      <section className={s.group}>
+        <h2 className={s.groupTitle}>응원법</h2>
+        <div className={s.row}>
+          <span>칠하는 색</span>
+          <span className={s.swatches} role="radiogroup" aria-label="응원법 칠하는 색">
+            {CHEER_COLORS.map((c) => (
+              <button key={c.key} type="button" role="radio" aria-checked={cheerColor === c.color} aria-label={c.name} className={`${s.swatch} ${cheerColor === c.color ? s.swatchOn : ''}`} style={{ background: c.color }} onClick={() => void setSetting(getDb(), CHEER_COLOR_KEY, c.color)} />
+            ))}
+          </span>
+        </div>
       </section>
 
       <section className={s.group}>

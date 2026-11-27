@@ -15,6 +15,10 @@ export const CHEER_COLORS = [
   { key: 'g', name: '연두', color: '#D6F5C9', stage: '#8BE07A' },
 ] as const;
 
+/** 응원법을 칠하는 색(설정에서 바꿈). 처음엔 노랑. */
+export const CHEER_COLOR_KEY = 'cheerColor';
+export const DEFAULT_CHEER_COLOR: string = CHEER_COLORS[0].color;
+
 export function stageColor(color: string): string {
   return CHEER_COLORS.find((c) => c.color === color)?.stage ?? color;
 }
